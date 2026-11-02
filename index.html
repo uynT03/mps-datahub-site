@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>MPS DataHub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: sticky top bar + section tabs; one column of content, max 1120px; data blocks as quiet panels */
+:root{
+  --bg:#F3F5F7; --panel:#FFFFFF; --panel2:#EEF1F4; --fg:#18222C; --muted:#5B6874; --line:#D9DFE5;
+  --accent:#0B6E85; --accent-soft:#DCEFF3; --code:#F0F3F6;
+  --crit:#B42318; --crit-soft:#FDECEA; --warn:#B25E09; --warn-soft:#FDF1E1; --ok:#1F7A4D; --ok-soft:#E3F3EA;
+  --f-display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F151B; --panel:#161E26; --panel2:#1C2630; --fg:#E3E9EE; --muted:#93A1AD; --line:#2A3641;
+  --accent:#4FB3CB; --accent-soft:#16323B; --code:#111920;
+  --crit:#F0766B; --crit-soft:#3A1C1A; --warn:#E9A44C; --warn-soft:#3A2A15; --ok:#5CC08D; --ok-soft:#163327; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F151B; --panel:#161E26; --panel2:#1C2630; --fg:#E3E9EE; --muted:#93A1AD; --line:#2A3641;
+  --accent:#4FB3CB; --accent-soft:#16323B; --code:#111920;
+  --crit:#F0766B; --crit-soft:#3A1C1A; --warn:#E9A44C; --warn-soft:#3A2A15; --ok:#5CC08D; --ok-soft:#163327; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.55 var(--f-body);margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
+a{color:var(--accent)}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--panel);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:16px;padding-block:10px;flex-wrap:wrap}
+.brand{font:700 20px/1 var(--f-display);letter-spacing:.01em;display:flex;align-items:baseline;gap:10px}
+.brand small{font:500 12px var(--f-mono);color:var(--muted);letter-spacing:0}
+.search{margin-left:auto;flex:1 1 220px;max-width:340px}
+.search input,.inp{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);font:14px var(--f-body)}
+nav.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+nav.tabs a{padding:9px 12px;text-decoration:none;color:var(--muted);font:500 14px var(--f-body);border-bottom:2px solid transparent;white-space:nowrap}
+nav.tabs a[aria-current="page"]{color:var(--fg);border-color:var(--accent)}
+nav.tabs a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{padding-block:24px 64px}
+section[hidden]{display:none}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0}
+h1{font-size:30px;line-height:1.15;font-weight:700}
+h2{font-size:21px;font-weight:600;margin-top:32px;margin-bottom:10px}
+h3{font-size:17px;font-weight:600}
+.lede{color:var(--muted);max-width:68ch;margin:6px 0 0}
+.grid{display:grid;gap:12px}
+.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;min-width:0}
+.stat .k{font:500 12px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.stat .v{font:600 28px/1.2 var(--f-display);font-variant-numeric:tabular-nums}
+.stat .s{color:var(--muted);font-size:13px}
+.pill{display:inline-block;font:600 11px/1 var(--f-mono);text-transform:uppercase;letter-spacing:.06em;padding:4px 7px;border-radius:4px;white-space:nowrap}
+.pill.critical{background:var(--crit-soft);color:var(--crit)} .pill.warning{background:var(--warn-soft);color:var(--warn)} .pill.info,.pill.neutral{background:var(--panel2);color:var(--muted)} .pill.ok{background:var(--ok-soft);color:var(--ok)}
+.headline{border-left:4px solid var(--line)} .headline.critical{border-left-color:var(--crit)} .headline.warning{border-left-color:var(--warn)}
+.headline p{margin:6px 0 0;color:var(--muted);font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.chip{border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:999px;padding:5px 11px;font:500 13px var(--f-body);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--panel)}
+details.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-top:8px}
+details.card>summary{list-style:none;cursor:pointer;padding:12px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+details.card>summary::-webkit-details-marker{display:none}
+details.card>summary::before{content:"›";font:600 18px/1 var(--f-mono);color:var(--muted);transition:transform .15s;width:12px}
+details.card[open]>summary::before{transform:rotate(90deg)}
+@media (prefers-reduced-motion:reduce){details.card>summary::before{transition:none}}
+.sum-title{font-weight:600}
+.sum-meta{color:var(--muted);font-size:13px}
+.card-body{padding:0 16px 16px;border-top:1px solid var(--line)}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px 24px;margin-top:12px}
+.meta div{min-width:0} .meta b{display:block;font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+code,.mono{font-family:var(--f-mono);font-size:13px}
+.fqn{font-family:var(--f-mono);font-size:13px;color:var(--muted);word-break:break-all}
+.tbl-wrap{overflow-x:auto;margin-top:10px}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--panel2)}
+td.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--f-mono);font-size:13px}
+.codebox{position:relative;margin-top:8px}
+.codebox pre{background:var(--code);border:1px solid var(--line);border-radius:6px;padding:12px;overflow-x:auto;font:12.5px/1.5 var(--f-mono);margin:0;white-space:pre}
+.copy{position:absolute;top:6px;right:6px;font:500 12px var(--f-body);background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:4px;padding:3px 8px;cursor:pointer}
+.qtitle{font-weight:600;margin-top:14px} .qtitle span{color:var(--muted);font-weight:400}
+ul.tight,ol.tight{margin:6px 0;padding-left:20px} ul.tight li,ol.tight li{margin:3px 0}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px 28px;margin-top:12px}
+.lbl{font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-top:14px}
+.note{background:var(--accent-soft);border-radius:8px;padding:12px 16px;font-size:14px}
+.steps{counter-reset:s;display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.steps .panel{position:relative;padding-top:30px}
+.steps .panel::before{counter-increment:s;content:counter(s);position:absolute;top:10px;left:16px;font:600 12px var(--f-mono);color:var(--accent)}
+.steps p{margin:4px 0 0;color:var(--muted);font-size:13.5px}
+.timeline{display:grid;gap:0}
+.tl-row{display:grid;grid-template-columns:120px 1fr;gap:14px;padding:10px 0;border-bottom:1px solid var(--line)}
+.tl-row .t{font:500 13px var(--f-mono);color:var(--accent)}
+.tl-row>div{min-width:0;overflow-wrap:anywhere}
+.sum-meta,.sum-title,td,.mono{overflow-wrap:anywhere}
+.tl-row .d{color:var(--muted);font-size:13.5px}
+form.req{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+form.req label{font-size:13px;color:var(--muted);display:grid;gap:4px}
+form.req .full{grid-column:1/-1}
+button.primary{background:var(--accent);color:var(--panel);border:0;border-radius:6px;padding:9px 16px;font:600 14px var(--f-body);cursor:pointer;justify-self:start}
+.mermaid-wrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px}
+.empty{color:var(--muted);padding:20px 0}
+footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-block:20px}
+@media (max-width:560px){h1{font-size:25px}.tl-row{grid-template-columns:1fr;gap:2px}.search{max-width:none}}
+
+/* login gate + history strip */
+#gate{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:16px}
+#gate form{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:26px;width:100%;max-width:360px;display:flex;flex-direction:column;gap:10px}
+#gate h2{margin:0;font:700 22px/1.2 var(--f-display)}
+#gate p{margin:0;color:var(--muted);font-size:13.5px}
+#gate .err{color:var(--crit);font-size:13px;min-height:1.2em}
+body:not(.locked) #gate{display:none}
+body.locked header.top,body.locked main,body.locked footer{display:none}
+.hbtn{border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:6px;padding:6px 10px;font:500 13px var(--f-body);cursor:pointer}
+.hbtn:hover{border-color:var(--accent);color:var(--accent)}
+.hist{display:flex;align-items:flex-end;gap:3px;height:90px;padding-top:6px}
+.hist .d{flex:1 1 0;display:flex;flex-direction:column-reverse;min-width:4px;height:100%}
+.hist .c{background:var(--crit)} .hist .w{background:var(--warn)}
+.hist-axis{display:flex;justify-content:space-between;color:var(--muted);font:12px var(--f-mono);margin-top:4px}
+.legend{display:flex;gap:14px;color:var(--muted);font-size:13px;margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+</style>
+</head>
+<body class="locked">
+<div id="gate"><form id="gate-form">
+  <h2>MPS DataHub</h2>
+  <p>Enter the team password. The data on this page is encrypted and only opens with it.</p>
+  <input type="text" name="username" value="mps-datahub" autocomplete="username" hidden>
+  <input class="inp" id="gate-pw" type="password" autocomplete="current-password" placeholder="Team password" required aria-label="Team password">
+  <label style="font-size:13px;color:var(--muted)"><input type="checkbox" id="gate-remember" checked> Remember on this browser</label>
+  <button class="primary" type="submit" id="gate-btn">Open</button>
+  <div class="err" id="gate-err" role="alert"></div>
+</form></div>
+<header class="top">
+  <div class="wrap">
+    <div class="bar">
+      <div class="brand">MPS DataHub <small id="asof"></small></div>
+      <div class="search"><input id="q" type="search" placeholder="Search tables, fields, games, issues…" aria-label="Search the hub"></div>
+      <button class="hbtn" type="button" id="btn-theme">Dark</button>
+      <button class="hbtn" type="button" id="btn-out">Sign out</button>
+    </div>
+    <nav class="tabs" aria-label="Sections">
+      <a href="#overview">Overview</a>
+      <a href="#inventory">Table inventory</a>
+      <a href="#flows">Data flows &amp; API</a>
+      <a href="#pipelines">Sources &amp; pipelines</a>
+      <a href="#anomaly">Data anomaly</a>
+      <a href="#issues">Common issues</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="s-overview">
+    <h1>One place for UA and Data to find, trust and fix BigQuery data</h1>
+    <p class="lede">Which tables to use and what their fields mean, where the data comes from, which scheduled query writes it and when, and what looks wrong today, with steps to fix it.</p>
+    <div class="grid g4" style="margin-top:18px" id="ov-stats"></div>
+    <h2>What needs attention</h2>
+    <div class="grid g2" id="ov-headlines"></div>
+    <h2>Daily timeline (ICT)</h2>
+    <div class="panel timeline" id="ov-timeline"></div>
+    <h2>Start here</h2>
+    <div class="grid g2">
+      <div class="panel"><h3>UA team</h3><ul class="tight">
+        <li><a href="#inventory">Table inventory</a>: <code>GMT_Dashboard_Output_Final</code>, <code>financial_metrics</code> and <code>roi_activity</code> come with copy-ready queries.</li>
+        <li>Numbers look off? Check <a href="#anomaly">Data anomaly</a> first, then <a href="#issues">Common issues</a>.</li>
+        <li>Need data from a new API? See <a href="#flows">Data flows &amp; API</a> for what exists and a request form.</li></ul></div>
+      <div class="panel"><h3>Data team</h3><ul class="tight">
+        <li><a href="#pipelines">Sources &amp; pipelines</a> shows which proc or scheduled query writes each table and when.</li>
+        <li>Each anomaly includes ready-to-run diagnostic and re-run SQL.</li>
+        <li>Thresholds and table docs live in <code>config/*.yaml</code> in the <code>mps_datahub</code> repo.</li></ul></div>
+    </div>
+  </section>
+
+  <section id="s-inventory" hidden>
+    <h1>Table inventory</h1>
+    <p class="lede">The tables people use most: what they mean, which fields to watch, example queries, partition and size, update schedule and owner. Schemas and producers were checked against BigQuery metadata.</p>
+    <div class="chips" id="inv-domains" role="group" aria-label="Filter by domain"></div>
+    <div id="inv-list"></div>
+    <h2>Datasets covered</h2>
+    <div class="tbl-wrap panel" style="padding:0"><table id="ds-table"></table></div>
+  </section>
+
+  <section id="s-flows" hidden>
+    <h1>Data flows &amp; API</h1>
+    <p class="lede">The data we have, the flow that brings each source in (AppsFlyer, ad networks, stores), what each flow contains, and how to request a new API source.</p>
+    <h2>Overview</h2>
+    <div class="mermaid-wrap"><pre class="mermaid" id="flow-mermaid"></pre></div>
+    <h2>Sources and what they contain</h2>
+    <div id="flow-sources"></div>
+    <h2>Request new API data</h2>
+    <div class="steps" id="req-steps"></div>
+    <details class="card"><summary><span class="sum-title">Is it feasible? Rules of thumb</span></summary><div class="card-body"><ul class="tight" id="req-rules"></ul></div></details>
+    <div class="panel" style="margin-top:14px">
+      <h3>Request form</h3>
+      <p class="lede" style="margin-bottom:10px">Fill this in, copy the text and send it to <span class="mono" id="req-email"></span>.</p>
+      <form class="req" id="req-form">
+        <label>Requester (name / team)<input class="inp" id="rq-who"></label>
+        <label>Source<select class="inp" id="rq-src"></select></label>
+        <label class="full">Business question<textarea class="inp" id="rq-q" rows="2" placeholder="e.g. D7 ROAS by creative for Dead Target on Unity"></textarea></label>
+        <label>Metrics / fields<input class="inp" id="rq-f"></label>
+        <label>Granularity<input class="inp" id="rq-g" placeholder="day × campaign × country"></label>
+        <label>History needed<input class="inp" id="rq-h" placeholder="last 90 days"></label>
+        <label>Needed by<input class="inp" id="rq-d" type="date"></label>
+        <button class="primary" type="submit">Generate request</button>
+      </form>
+      <div class="codebox" id="rq-out" hidden><pre id="rq-text"></pre><button class="copy" type="button" data-copy="rq-text">Copy</button></div>
+    </div>
+  </section>
+
+  <section id="s-pipelines" hidden>
+    <h1>Sources, procs &amp; pipelines</h1>
+    <p class="lede">The scheduled query, proc or Airflow job behind each table, when it runs and what it reads. This comes from 14 days of <code>INFORMATION_SCHEMA.JOBS</code>.</p>
+    <h2>Pipelines</h2>
+    <div id="pipe-list"></div>
+    <h2>Curated tables → producer</h2>
+    <div class="tbl-wrap panel" style="padding:0"><table id="prod-table"></table></div>
+    <h2>Monitors that already exist</h2>
+    <div class="tbl-wrap panel" style="padding:0"><table id="mon-table"></table></div>
+  </section>
+
+  <section id="s-anomaly" hidden>
+    <h1>Data anomaly</h1>
+    <p class="lede" id="an-lede"></p>
+    <div class="grid g4" style="margin-top:16px" id="an-stats"></div>
+    <div class="panel" style="margin-top:12px"><div class="lbl">Issues found per check date, last 30 days</div><div id="an-hist"></div></div>
+    <div class="chips" id="an-sev" role="group" aria-label="Filter by severity"></div>
+    <div class="chips" id="an-tables" role="group" aria-label="Filter by table"></div>
+    <div id="an-list"></div>
+    <h2>Criteria</h2>
+    <div class="tbl-wrap panel" style="padding:0"><table id="rules-table"></table></div>
+    <h2>How alerts reach the team</h2>
+    <div class="note" id="an-notify"></div>
+    <div class="lbl">Latest results in BigQuery</div>
+    <div class="codebox"><pre id="latest-sql"></pre><button class="copy" type="button" data-copy="latest-sql">Copy</button></div>
+  </section>
+
+  <section id="s-issues" hidden>
+    <h1>Common issues</h1>
+    <p class="lede">Known pitfalls, how to check each one, and how to fix it.</p>
+    <div class="chips" id="faq-aud" role="group" aria-label="Filter by audience"></div>
+    <div id="faq-list"></div>
+  </section>
+</main>
+<footer class="wrap" id="foot"></footer>
+
+<script>
+let D = null;
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = v => v == null ? '–' : (typeof v === 'number' ? v.toLocaleString('en-US', {maximumFractionDigits: 2}) : esc(v));
+let uid = 0;
+const code = (sql) => { const id = 'c' + (++uid); return `<div class="codebox"><pre id="${id}">${esc(sql.trim())}</pre><button class="copy" type="button" data-copy="${id}">Copy</button></div>`; };
+const pill = (sev) => `<span class="pill ${esc(sev)}">${esc(sev)}</span>`;
+const SEV = {critical: 0, warning: 1, info: 2};
+let query = '';
+
+/* ---------- routing ---------- */
+const VIEWS = ['overview', 'inventory', 'flows', 'pipelines', 'anomaly', 'issues'];
+function route() {
+  const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'overview';
+  VIEWS.forEach(n => { $('#s-' + n).hidden = n !== v; });
+  document.querySelectorAll('nav.tabs a').forEach(a => a.setAttribute('aria-current', a.getAttribute('href') === '#' + v ? 'page' : 'false'));
+  if (v === 'flows') renderMermaid();
+}
+addEventListener('hashchange', () => { route(); scrollTo(0, 0); });
+
+/* ---------- overview ---------- */
+function overview() {
+  const inc = D.incidents, crit = inc.filter(i => i.severity === 'critical').length, warn = inc.filter(i => i.severity === 'warning').length;
+  $('#asof').textContent = 'data ' + D.check_day;
+  $('#ov-stats').innerHTML = [
+    ['Datasets', D.datasets.length, '2 projects, US multi-region'],
+    ['Curated tables', D.tables.length, D.tables.filter(t => t.monitored).length + ' monitored daily'],
+    ['Open issues', `<span style="color:var(--crit)">${crit}</span> / <span style="color:var(--warn)">${warn}</span>`, 'critical / warning, run ' + esc(D.run.run_at)],
+    ['Pipelines mapped', D.pipelines.length, 'scheduled queries, Airflow, API loads'],
+  ].map(([k, v, s]) => `<div class="panel stat"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`).join('');
+  $('#ov-headlines').innerHTML = !inc.length ? `<div class="panel headline">${'<span class="pill ok">all clear</span>'}<h3 style="margin-top:8px">No open issues for ${esc(D.check_day)}</h3><p>Last check: ${esc(D.run.run_at)}.</p></div>` : D.headlines.map(h => `<div class="panel headline ${h.severity}">${pill(h.severity)} <h3 style="margin-top:8px">${esc(h.title)}</h3><p>${esc(h.text)}</p></div>`).join('')
+    + `<div class="panel"><a href="#anomaly">See all ${inc.length} issues with fix steps →</a></div>`;
+  const tl = [...D.pipelines].map(p => ({t: p.schedule_ict, n: p.name, d: p.type + ' · ' + (p.writes || []).slice(0, 3).join(', ')}));
+  tl.push({t: 'daily ~10:45', n: 'UyenTHD - DataHub anomaly checks', d: 'BQ scheduled query · writes uyenthd_datahub_monitor.anomaly_log'});
+  const key = s => { const m = String(s).match(/(\d{1,2}):(\d{2})/); return m ? +m[1] * 60 + +m[2] : (String(s).includes('2h') ? -1 : 9999); };
+  tl.sort((a, b) => key(a.t) - key(b.t));
+  $('#ov-timeline').innerHTML = tl.map(r => `<div class="tl-row"><div class="t">${esc(r.t.replace('daily ', ''))}</div><div><div>${esc(r.n)}</div><div class="d">${esc(r.d)}</div></div></div>`).join('');
+}
+
+/* ---------- inventory ---------- */
+let invDomain = 'All';
+function tableCard(t) {
+  const o = t.owner || {}, pb = t.produced_by || {};
+  const kf = (t.key_fields || []).length ? `<div class="tbl-wrap"><table><tr><th>Field</th><th>Type</th><th>Note</th></tr>${t.key_fields.map(f => `<tr><td class="mono">${esc(f.name)}</td><td class="mono">${esc(f.type)}</td><td>${esc(f.note)}</td></tr>`).join('')}</table></div>` : '';
+  const qs = (t.example_queries || []).map(q => `<div class="qtitle">${esc(q.title)} <span>· ${esc(q.use_case || '')}</span></div>${code(q.sql)}`).join('');
+  const cav = (t.caveats || []).length ? `<div class="lbl">Watch out</div><ul class="tight">${t.caveats.map(c => `<li>${esc(c)}</li>`).join('')}</ul>` : '';
+  const rerun = pb.rerun_sql ? `<div class="lbl">Re-run</div>${code(pb.rerun_sql.replace(/\{n_days\}/g, '<n_days>').replace(/\{date\}/g, '<YYYY-MM-DD>'))}` : '';
+  return `<details class="card" data-search="${esc(JSON.stringify(t).toLowerCase())}" data-domain="${esc(t.domain)}">
+    <summary><span class="sum-title">${esc(t.name)}</span><span class="pill neutral">${esc(t.domain)}</span><span class="pill neutral">${esc(t.layer)}</span>${t.monitored ? '<span class="pill ok">monitored</span>' : ''}<span class="sum-meta">${esc((t.audience || []).join(' · '))}</span></summary>
+    <div class="card-body">
+      <p class="fqn" style="margin-top:12px">${esc(t.fqn)}</p>
+      <p style="margin:6px 0 0">${esc(t.description)}</p>
+      <div class="meta">
+        <div><b>Grain</b>${esc(t.grain)}</div><div><b>Partition</b><span class="mono">${esc(t.partition)}</span></div>
+        <div><b>Size</b>${esc(t.size_hint || '–')}</div><div><b>Update schedule</b>${esc(t.update_schedule)}</div>
+        <div><b>Produced by</b><span class="mono">${esc(pb.name || '–')}</span></div><div><b>Pipeline</b>${esc(pb.pipeline || '–')}</div>
+        <div><b>Owner</b>${esc(o.name || '–')} ${o.email ? '<span class="mono">' + esc(o.email) + '</span>' : ''}</div>
+        <div><b>Upstream</b><span class="mono">${esc((t.upstream || []).join(', ') || '–')}</span></div>
+      </div>
+      ${kf ? '<div class="lbl">Key fields</div>' + kf : ''}
+      ${qs ? '<div class="lbl">Example queries</div>' + qs : ''}
+      ${cav}${rerun}
+      ${t.monitored ? `<div class="lbl">Daily checks</div><p style="margin:4px 0 0" class="mono">${esc(t.checks.join(' · '))} · complete day = today − ${esc(t.lag)}</p>` : ''}
+    </div></details>`;
+}
+function inventory() {
+  const domains = ['All', ...new Set(D.tables.map(t => t.domain))];
+  $('#inv-domains').innerHTML = domains.map(d => `<button class="chip" type="button" aria-pressed="${d === invDomain}" data-dom="${esc(d)}">${esc(d)}</button>`).join('');
+  $('#inv-list').innerHTML = D.tables.map(tableCard).join('');
+  $('#ds-table').innerHTML = '<tr><th>Dataset</th><th>Layer</th><th>Tables</th><th>Size (GB)</th><th>Purpose</th><th>Owner</th></tr>' +
+    D.datasets.map(d => `<tr><td class="mono">${esc(d.id)}</td><td>${esc(d.layer)}</td><td class="num">${fmt(d.tables)}</td><td class="num">${fmt(d.size_gb)}</td><td>${esc(d.purpose)}</td><td>${esc(d.owner)}</td></tr>`).join('');
+  filterInventory();
+}
+function filterInventory() {
+  let n = 0;
+  document.querySelectorAll('#inv-list details').forEach(el => {
+    const ok = (invDomain === 'All' || el.dataset.domain === invDomain) && (!query || el.dataset.search.includes(query));
+    el.hidden = !ok; if (ok) n++;
+  });
+  document.querySelectorAll('#inv-domains .chip').forEach(c => c.setAttribute('aria-pressed', c.dataset.dom === invDomain));
+}
+$('#inv-domains').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) { invDomain = b.dataset.dom; filterInventory(); } });
+
+/* ---------- flows ---------- */
+let mermaidDone = false;
+function renderMermaid() {
+  if (mermaidDone) return; mermaidDone = true;
+  const ids = {}; let k = 0; const id = n => ids[n] || (ids[n] = 'n' + (++k));
+  const lines = ['flowchart LR'];
+  (D.flows.edges || []).forEach(([a, b, l]) => lines.push(`  ${id(a)}["${a.replace(/"/g, "'")}"] -->|${String(l || '').replace(/[|"]/g, ' ')}| ${id(b)}["${b.replace(/"/g, "'")}"]`));
+  $('#flow-mermaid').textContent = lines.join('\n');
+}
+function flows() {
+  const st = {live: ['ok', 'live'], available: ['warning', 'available, not ingested'], not_available: ['critical', 'not available']};
+  $('#flow-sources').innerHTML = (D.flows.sources || []).map(s => {
+    const [cls, lab] = st[s.status] || ['neutral', s.status];
+    return `<details class="card" data-search="${esc(JSON.stringify(s).toLowerCase())}"><summary><span class="sum-title">${esc(s.name)}</span><span class="pill neutral">${esc(s.kind)}</span><span class="pill ${cls}">${esc(lab)}</span></summary>
+      <div class="card-body"><div class="two"><div><div class="lbl">Contains</div><ul class="tight">${(s.contains || []).map(c => `<li>${esc(c)}</li>`).join('')}</ul><div class="lbl">Grain</div><div>${esc(s.grain)}</div></div>
+      <div><div class="meta" style="grid-template-columns:1fr"><div><b>Lands in</b><span class="mono">${esc(s.landing)}</span></div><div><b>Delivery</b>${esc(s.delivery)}</div><div><b>Pipeline</b>${esc(s.pipeline)}</div><div><b>Latency</b>${esc(s.latency)}</div><div><b>Owner</b>${esc(s.owner)}</div></div></div></div>
+      ${s.notes ? `<p class="note" style="margin-top:12px">${esc(s.notes)}</p>` : ''}</div></details>`;
+  }).join('');
+  const rp = D.flows.request_process || {};
+  $('#req-steps').innerHTML = (rp.steps || []).map(s => `<div class="panel"><h3>${esc(s.title)}</h3><p>${esc(s.detail)}</p></div>`).join('');
+  $('#req-rules').innerHTML = (rp.feasibility_rules || []).map(r => `<li>${esc(r)}</li>`).join('');
+  $('#req-email').textContent = rp.request_email || '';
+  $('#rq-src').innerHTML = [...(D.flows.sources || []).map(s => s.name), 'Other / not sure'].map(s => `<option>${esc(s)}</option>`).join('');
+  $('#req-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const v = id => $('#' + id).value.trim();
+    $('#rq-text').textContent = `[Data request] ${v('rq-q').slice(0, 60)}\n\nRequester: ${v('rq-who')}\nSource: ${v('rq-src')}\nBusiness question: ${v('rq-q')}\nMetrics / fields: ${v('rq-f')}\nGranularity: ${v('rq-g')}\nHistory needed: ${v('rq-h')}\nNeeded by: ${v('rq-d')}`;
+    $('#rq-out').hidden = false;
+  });
+}
+
+/* ---------- pipelines ---------- */
+function pipelines() {
+  $('#pipe-list').innerHTML = D.pipelines.map(p => `<details class="card" data-search="${esc(JSON.stringify(p).toLowerCase())}"><summary><span class="sum-title">${esc(p.name)}</span><span class="pill neutral">${esc(p.type)}</span><span class="sum-meta">${esc(p.schedule_ict)} ICT</span></summary>
+    <div class="card-body"><div class="meta"><div><b>Project</b><span class="mono">${esc(p.project)}</span></div><div><b>Owner / runs as</b>${esc(p.owner)}</div></div>
+    <div class="lbl">Steps</div>${code(String(p.steps).split('->').map(s => s.trim()).join('\n  -> '))}
+    <div class="lbl">Writes</div><p class="mono" style="margin:4px 0 0">${esc((p.writes || []).join(', '))}</p></div></details>`).join('');
+  $('#prod-table').innerHTML = '<tr><th>Table</th><th>Producer</th><th>Pipeline</th><th>Schedule</th><th>Upstream</th></tr>' + D.tables.map(t => {
+    const pb = t.produced_by || {};
+    return `<tr><td class="mono">${esc(t.fqn)}</td><td class="mono">${esc(pb.name)}</td><td>${esc(pb.pipeline)}</td><td>${esc(t.update_schedule)}</td><td class="mono">${esc((t.upstream || []).join(', '))}</td></tr>`;
+  }).join('');
+  $('#mon-table').innerHTML = '<tr><th>Monitor</th><th>How</th><th>Table</th></tr>' + D.existing_monitors.map(m => `<tr><td>${esc(m.name)}</td><td>${esc(m.how)}</td><td class="mono">${esc(m.table)}</td></tr>`).join('');
+}
+
+/* ---------- anomaly ---------- */
+let anSev = 'all', anTable = 'all';
+function incidentCard(i) {
+  const rows = `<div class="tbl-wrap"><table><tr><th>Metric</th><th>Value</th><th class="num">Observed</th><th class="num">Expected</th><th>Detail</th></tr>${i.rows.map(r => `<tr><td class="mono">${esc(r.metric)}</td><td class="mono">${esc(r.dimension_value)}</td><td class="num">${fmt(r.observed)}</td><td class="num">${fmt(r.expected)}</td><td>${esc(r.detail)}</td></tr>`).join('')}</table></div>`;
+  const f = i.fix || {};
+  return `<details class="card" data-sev="${i.severity}" data-table="${esc(i.table)}" data-search="${esc(JSON.stringify(i).toLowerCase())}">
+    <summary>${pill(i.severity)}${i.status ? `<span class="pill ok">${esc(i.status.status)}</span>` : ''}<span class="sum-title">${esc(i.label)}</span><span class="sum-meta">${esc(i.table)} · ${esc(i.game)} · ${esc(i.date)}</span></summary>
+    <div class="card-body"><p style="margin-top:12px">${esc(i.headline)}</p>
+    <p class="sum-meta">Pipeline: ${esc(f.pipeline)} · Owner: ${esc(f.owner || '–')}</p>${rows}
+    <div class="two"><div><div class="lbl">Likely causes</div><ul class="tight">${(f.causes || []).map(c => `<li>${esc(c)}</li>`).join('')}</ul></div>
+    <div><div class="lbl">How to fix</div><ol class="tight">${(f.steps || []).map(c => `<li>${esc(c)}</li>`).join('')}</ol></div></div>
+    ${(f.sql || []).map(s => `<div class="qtitle">${esc(s.label)}</div>${code(s.sql)}`).join('')}</div></details>`;
+}
+function anomaly() {
+  const r = D.run;
+  $('#an-lede').innerHTML = `Results of the ${esc(r.source)} at <b>${esc(r.run_at)}</b>: ${r.tables_checked} tables checked, ${esc(r.scanned)} scanned, ${r.errors} check errors. The same checks now run every day at 10:45 ICT and write to <span class="mono">${esc(D.notify.dataset)}</span>. This page refreshes every morning after the checks.`;
+  const inc = [...D.incidents].sort((a, b) => SEV[a.severity] - SEV[b.severity] || a.table.localeCompare(b.table));
+  const c = s => inc.filter(i => i.severity === s).length;
+  $('#an-stats').innerHTML = [['Critical', c('critical'), 'var(--crit)'], ['Warning', c('warning'), 'var(--warn)'], ['Tables affected', new Set(inc.map(i => i.table)).size, 'var(--fg)'], ['Games affected', new Set(inc.map(i => i.app_id).filter(Boolean)).size, 'var(--fg)']]
+    .map(([k, v, col]) => `<div class="panel stat"><div class="k">${k}</div><div class="v" style="color:${col}">${v}</div></div>`).join('');
+  $('#an-sev').innerHTML = ['all', 'critical', 'warning'].map(s => `<button class="chip" type="button" data-sev="${s}" aria-pressed="${s === anSev}">${s === 'all' ? 'All severities' : s}</button>`).join('');
+  const tables = ['all', ...new Set(inc.map(i => i.table))];
+  $('#an-tables').innerHTML = tables.map(t => `<button class="chip" type="button" data-tbl="${esc(t)}" aria-pressed="${t === anTable}">${t === 'all' ? 'All tables' : esc(t)} ${t === 'all' ? '' : '<span class="mono">' + inc.filter(i => i.table === t).length + '</span>'}</button>`).join('');
+  $('#an-list').innerHTML = inc.map(incidentCard).join('');
+  const RULES = [
+    ['Duplicated data', 'duplicate', 'Rows identical on every column, or repeated business keys, on the checked day', 'critical'],
+    ['Higher / lower than neighbouring days', 'spike / drop', '|value ÷ median(previous 7 days) − 1| > threshold AND robust z (MAD) > 3.5 AND enough volume. ≈2× is flagged as "loaded twice"', 'warning'],
+    ['Missing game', 'missing_game', 'Game active on ≥4 of the last 7 days (avg ≥ 10) but no rows on the checked day', 'critical'],
+    ['Missing metric', 'missing_metric', 'Game has rows but a metric is 0 while its 7-day median is above the volume floor', 'critical'],
+    ['Missing date', 'missing_date', 'A day with no rows in the last 7 days. Raw AppsFlyer tables are checked from partition metadata only', 'critical'],
+    ['Missing media_source', 'missing_media_source', 'A source with steady volume disappeared today; critical if it held ≥ 15% of the game\'s volume', 'warning → critical'],
+    ['Missing geo', 'missing_geo', 'Same rule on the country column', 'warning → critical'],
+    ['Table not refreshed', 'stale_table', 'Last modified more than 30 h ago (per table)', 'critical'],
+    ['Proc error', 'pipeline_error', 'New rows in the procs\' error_stack_trace tables in the last 24 h (informational "SKIPPED" rows ignored)', 'critical'],
+  ];
+  $('#rules-table').innerHTML = '<tr><th>Criterion</th><th>Check</th><th>Rule</th><th>Severity</th></tr>' + RULES.map(r => `<tr><td>${r[0]}</td><td class="mono">${r[1]}</td><td>${esc(r[2])}</td><td>${esc(r[3])}</td></tr>`).join('');
+  $('#an-notify').innerHTML = `Every day the BigQuery scheduled query <b>UyenTHD - DataHub anomaly checks</b> (10:45 ICT, about 0.9 GB) writes findings to <span class="mono">${esc(D.notify.dataset)}.anomaly_log</span> and emails the owner if it fails. About 30 minutes later the daily job (<span class="mono">python -m mps_datahub.cli export-site --publish --notify</span>, GitHub Actions) rebuilds this page and sends a digest with the fix steps to <b>email, Teams and Discord</b>. ${esc(D.notify.schedule)}.`;
+  $('#latest-sql').textContent = `SELECT severity, table_id, check_type, app_id, dimension_value, metric, check_date, detail\nFROM \`${D.notify.dataset}.anomaly_log\`\nWHERE DATE(run_ts, 'Asia/Ho_Chi_Minh') = CURRENT_DATE('Asia/Ho_Chi_Minh')\nORDER BY CASE severity WHEN 'critical' THEN 0 ELSE 1 END, table_id, check_type;`;
+  filterAnomaly();
+}
+function filterAnomaly() {
+  document.querySelectorAll('#an-list details').forEach(el => {
+    el.hidden = !((anSev === 'all' || el.dataset.sev === anSev) && (anTable === 'all' || el.dataset.table === anTable) && (!query || el.dataset.search.includes(query)));
+  });
+  document.querySelectorAll('#an-sev .chip').forEach(c => c.setAttribute('aria-pressed', c.dataset.sev === anSev));
+  document.querySelectorAll('#an-tables .chip').forEach(c => c.setAttribute('aria-pressed', c.dataset.tbl === anTable));
+}
+$('#an-sev').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) { anSev = b.dataset.sev; filterAnomaly(); } });
+$('#an-tables').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) { anTable = b.dataset.tbl; filterAnomaly(); } });
+
+/* ---------- issues ---------- */
+let faqAud = 'All';
+function issues() {
+  $('#faq-aud').innerHTML = ['All', 'UA', 'Data'].map(a => `<button class="chip" type="button" data-aud="${a}" aria-pressed="${a === faqAud}">${a === 'All' ? 'Everyone' : a}</button>`).join('');
+  $('#faq-list').innerHTML = D.faq.map(f => `<details class="card" data-aud="${esc(f.audience)}" data-search="${esc(JSON.stringify(f).toLowerCase())}"><summary><span class="sum-title">${esc(f.title)}</span><span class="pill neutral">${esc(f.audience)}</span></summary>
+    <div class="card-body"><div class="lbl">Symptom</div><p style="margin:4px 0">${esc(f.symptom)}</p><div class="lbl">Why</div><p style="margin:4px 0">${esc(f.cause)}</p>
+    ${f.check_sql ? '<div class="lbl">Check</div>' + code(f.check_sql) : ''}<div class="lbl">Fix</div><p style="margin:4px 0">${esc(f.fix)}</p></div></details>`).join('');
+  filterIssues();
+}
+function filterIssues() {
+  document.querySelectorAll('#faq-list details').forEach(el => { el.hidden = !((faqAud === 'All' || el.dataset.aud === faqAud || el.dataset.aud === 'All') && (!query || el.dataset.search.includes(query))); });
+  document.querySelectorAll('#faq-aud .chip').forEach(c => c.setAttribute('aria-pressed', c.dataset.aud === faqAud));
+}
+$('#faq-aud').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) { faqAud = b.dataset.aud; filterIssues(); } });
+
+/* ---------- search + copy ---------- */
+$('#q').addEventListener('input', e => {
+  query = e.target.value.trim().toLowerCase();
+  filterInventory(); filterAnomaly(); filterIssues();
+  ['#flow-sources', '#pipe-list'].forEach(sel => document.querySelectorAll(sel + ' details').forEach(el => { el.hidden = !!query && !el.dataset.search.includes(query); }));
+  const cur = location.hash.slice(1) || 'overview';
+  if (query && cur === 'overview') location.hash = 'inventory';
+});
+document.addEventListener('click', e => {
+  const b = e.target.closest('.copy'); if (!b) return;
+  const el = document.getElementById(b.dataset.copy); const txt = el.textContent;
+  const done = () => { b.textContent = 'Copied'; setTimeout(() => b.textContent = 'Copy', 1400); };
+  try { navigator.clipboard.writeText(txt).then(done, () => { selectText(el); b.textContent = 'Press Ctrl+C'; }); } catch (_) { selectText(el); }
+});
+function selectText(el) { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+
+function footer() {
+  $('#foot').innerHTML = `Refreshed daily: BigQuery checks → <span class="mono">mps_datahub export-site</span> → encrypted <span class="mono">docs/data.json</span> → GitHub Pages. Data generated ${esc(D.generated)}. Catalog from <span class="mono">config/*.yaml</span>. Owner: uyenthd. Fields marked TODO still need confirmation from the table owner.`;
+}
+function historyStrip() {
+  const h = D.history || [];
+  if (!h.length) { $('#an-hist').innerHTML = '<p class="sum-meta">No history yet. It fills up after a few daily runs.</p>'; return; }
+  const max = Math.max(1, ...h.map(d => d.critical + d.warning));
+  $('#an-hist').innerHTML = `<div class="hist">${h.map(d => `<div class="d" title="${esc(d.date)}: ${d.critical} critical, ${d.warning} warning">
+      <div class="c" style="height:${100 * d.critical / max}%"></div><div class="w" style="height:${100 * d.warning / max}%"></div></div>`).join('')}</div>
+    <div class="hist-axis"><span>${esc(h[0].date)}</span><span>${esc(h[h.length - 1].date)}</span></div>
+    <div class="legend"><span><i style="background:var(--crit)"></i>critical</span><span><i style="background:var(--warn)"></i>warning</span></div>`;
+}
+
+/* ---------- encrypted data.json (AES-256-GCM, PBKDF2-SHA256; must match mps_datahub/site.py) ---------- */
+const KEY_STORE = 'datahub_key_v1';
+const b64d = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const b64e = u => btoa(String.fromCharCode(...new Uint8Array(u)));
+const kv = {
+  get(k) { try { return localStorage.getItem(k) || sessionStorage.getItem(k); } catch (_) { return null; } },
+  set(k, v, keep) { try { (keep ? localStorage : sessionStorage).setItem(k, v); } catch (_) {} },
+  del(k) { try { localStorage.removeItem(k); sessionStorage.removeItem(k); } catch (_) {} },
+};
+async function fetchDoc() {
+  let r;
+  try { r = await fetch('data.json?t=' + Date.now(), { cache: 'no-store' }); } catch (e) { throw new Error('LOAD'); }
+  if (!r.ok) throw new Error('LOAD');
+  return r.json();
+}
+async function deriveKey(pw, doc) {
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', hash: 'SHA-256', salt: b64d(doc.salt), iterations: doc.iter }, base,
+    { name: 'AES-GCM', length: 256 }, true, ['decrypt']);
+}
+async function openDoc(doc, key) {
+  const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64d(doc.iv) }, key, b64d(doc.ct));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+// The salt is fixed per password (settings.yaml site.kdf_salt), so the derived AES key stays valid across daily refreshes.
+// "Remember" stores that derived key, never the password. Changing the password/salt asks everyone to log in again.
+async function unlock(pw, remember) {
+  const doc = await fetchDoc();
+  if (doc.v === 0) return doc.plain;  // local preview file, never published
+  if (pw) {
+    const key = await deriveKey(pw, doc);
+    const data = await openDoc(doc, key);
+    kv.set(KEY_STORE, JSON.stringify({ salt: doc.salt, k: b64e(await crypto.subtle.exportKey('raw', key)) }), remember);
+    return data;
+  }
+  const saved = JSON.parse(kv.get(KEY_STORE) || 'null');
+  if (!saved || saved.salt !== doc.salt) throw new Error('LOGIN');
+  const key = await crypto.subtle.importKey('raw', b64d(saved.k), 'AES-GCM', false, ['decrypt']);
+  return openDoc(doc, key);
+}
+function start(data) {
+  D = data;
+  document.body.classList.remove('locked');
+  overview(); inventory(); flows(); pipelines(); anomaly(); historyStrip(); issues(); route(); footer();
+}
+$('#gate-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = $('#gate-btn'); btn.disabled = true; btn.textContent = 'Opening…'; $('#gate-err').textContent = '';
+  try { start(await unlock($('#gate-pw').value, $('#gate-remember').checked)); }
+  catch (err) { $('#gate-err').textContent = String(err.message) === 'LOAD' ? 'Could not load data.json. Open the page over HTTP (GitHub Pages does this).' : 'Wrong password.'; }
+  finally { btn.disabled = false; btn.textContent = 'Open'; $('#gate-pw').value = ''; }
+});
+$('#btn-out').addEventListener('click', () => { kv.del(KEY_STORE); location.reload(); });
+function applyTheme(t) {
+  if (t) document.documentElement.setAttribute('data-theme', t); else document.documentElement.removeAttribute('data-theme');
+  const dark = t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  $('#btn-theme').textContent = dark ? 'Light' : 'Dark';
+  try { t ? localStorage.setItem('datahub_theme', t) : localStorage.removeItem('datahub_theme'); } catch (_) {}
+  if (D && location.hash === '#flows') renderMermaid();
+}
+$('#btn-theme').addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
+});
+try { applyTheme(localStorage.getItem('datahub_theme')); } catch (_) { applyTheme(null); }
+unlock(null).then(start).catch(() => $('#gate-pw').focus());
+
+</script>
+
+</body>
+</html>
