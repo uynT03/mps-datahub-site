@@ -6,467 +6,904 @@
 <meta name="robots" content="noindex, nofollow">
 <title>MPS DataHub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=League+Gothic&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: sticky top bar + section tabs; one column of content, max 1120px; data blocks as quiet panels */
+/* =====================================================================
+   MPS DataHub - VNGGames brand (Brand Book 2026)
+   Orange #F05A22 · secondary #FAC30A #FF9B1E #D2501E · League Gothic + Inter Tight
+   Layout rules: one idea per card, lots of air, orange only for actions & highlights,
+   details live in a side panel instead of on the list.
+   ===================================================================== */
 :root{
-  --bg:#F3F5F7; --panel:#FFFFFF; --panel2:#EEF1F4; --fg:#18222C; --muted:#5B6874; --line:#D9DFE5;
-  --accent:#0B6E85; --accent-soft:#DCEFF3; --code:#F0F3F6;
-  --crit:#B42318; --crit-soft:#FDECEA; --warn:#B25E09; --warn-soft:#FDF1E1; --ok:#1F7A4D; --ok-soft:#E3F3EA;
-  --f-display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;
-  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --orange:#F05A22; --orange-deep:#D2501E; --amber:#FF9B1E; --sun:#FAC30A; --orange-ink:#B23E12;
+  --bg:#FFF8F3; --surface:#FFFFFF; --surface-2:#FBEEE5; --surface-3:#FFFBF8;
+  --ink:#1D1714; --muted:#72675F; --faint:#A0948B; --line:#F1E3D8; --line-strong:#E6D2C3;
+  --crit:#C10024; --crit-soft:#FFE6EA; --warn:#A85200; --warn-soft:#FFF0DC; --ok:#0B7F55; --ok-soft:#E1F6EC;
+  --code-bg:#211B18; --code-ink:#F7ECE3;
+  --tint-orange:#FFE7D9; --tint-sun:#FFF3CC; --tint-mint:#E2F5EC; --tint-sky:#E4F3F8; --band-white:#FFFFFF;
+  --shadow:0 1px 2px rgba(70,35,10,.04),0 6px 20px rgba(70,35,10,.05);
+  --shadow-lg:0 24px 60px rgba(40,15,0,.18);
+  --r-xl:28px; --r-lg:22px; --r-md:16px; --r-sm:12px;
+  --f-display:"League Gothic","Oswald","Arial Narrow",Impact,sans-serif;
+  --f-body:"Inter Tight",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  color-scheme:light;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0F151B; --panel:#161E26; --panel2:#1C2630; --fg:#E3E9EE; --muted:#93A1AD; --line:#2A3641;
-  --accent:#4FB3CB; --accent-soft:#16323B; --code:#111920;
-  --crit:#F0766B; --crit-soft:#3A1C1A; --warn:#E9A44C; --warn-soft:#3A2A15; --ok:#5CC08D; --ok-soft:#163327; color-scheme:dark}}
+  --tint-orange:#2C1A11; --tint-sun:#2A2410; --tint-mint:#122820; --tint-sky:#10252C; --band-white:#1C1511;
+  --orange:#FF6A33; --orange-deep:#E8602C; --amber:#FFAA45; --sun:#FFD03A; --orange-ink:#FF9C70;
+  --bg:#15100D; --surface:#201814; --surface-2:#2B201A; --surface-3:#1A1410;
+  --ink:#F8EEE7; --muted:#C2B0A3; --faint:#8E7F74; --line:#33271F; --line-strong:#47362B;
+  --crit:#FF6B83; --crit-soft:#3A161D; --warn:#FFB560; --warn-soft:#3A2913; --ok:#4FD69C; --ok-soft:#133224;
+  --code-bg:#0F0B09; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25); --shadow-lg:0 24px 60px rgba(0,0,0,.5); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0F151B; --panel:#161E26; --panel2:#1C2630; --fg:#E3E9EE; --muted:#93A1AD; --line:#2A3641;
-  --accent:#4FB3CB; --accent-soft:#16323B; --code:#111920;
-  --crit:#F0766B; --crit-soft:#3A1C1A; --warn:#E9A44C; --warn-soft:#3A2A15; --ok:#5CC08D; --ok-soft:#163327; color-scheme:dark}
-*{box-sizing:border-box}
-body{background:var(--bg);color:var(--fg);font:15px/1.55 var(--f-body);margin:0}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
-a{color:var(--accent)}
-.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--panel);border-bottom:1px solid var(--line)}
-.bar{display:flex;align-items:center;gap:16px;padding-block:10px;flex-wrap:wrap}
-.brand{font:700 20px/1 var(--f-display);letter-spacing:.01em;display:flex;align-items:baseline;gap:10px}
-.brand small{font:500 12px var(--f-mono);color:var(--muted);letter-spacing:0}
-.search{margin-left:auto;flex:1 1 220px;max-width:340px}
-.search input,.inp{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);font:14px var(--f-body)}
-nav.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
-nav.tabs a{padding:9px 12px;text-decoration:none;color:var(--muted);font:500 14px var(--f-body);border-bottom:2px solid transparent;white-space:nowrap}
-nav.tabs a[aria-current="page"]{color:var(--fg);border-color:var(--accent)}
-nav.tabs a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-main{padding-block:24px 64px}
-section[hidden]{display:none}
-h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0}
-h1{font-size:30px;line-height:1.15;font-weight:700}
-h2{font-size:21px;font-weight:600;margin-top:32px;margin-bottom:10px}
-h3{font-size:17px;font-weight:600}
-.lede{color:var(--muted);max-width:68ch;margin:6px 0 0}
-.grid{display:grid;gap:12px}
-.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
-.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px;min-width:0}
-.stat .k{font:500 12px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-.stat .v{font:600 28px/1.2 var(--f-display);font-variant-numeric:tabular-nums}
-.stat .s{color:var(--muted);font-size:13px}
-.pill{display:inline-block;font:600 11px/1 var(--f-mono);text-transform:uppercase;letter-spacing:.06em;padding:4px 7px;border-radius:4px;white-space:nowrap}
-.pill.critical{background:var(--crit-soft);color:var(--crit)} .pill.warning{background:var(--warn-soft);color:var(--warn)} .pill.info,.pill.neutral{background:var(--panel2);color:var(--muted)} .pill.ok{background:var(--ok-soft);color:var(--ok)}
-.headline{border-left:4px solid var(--line)} .headline.critical{border-left-color:var(--crit)} .headline.warning{border-left-color:var(--warn)}
-.headline p{margin:6px 0 0;color:var(--muted);font-size:14px}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
-.chip{border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:999px;padding:5px 11px;font:500 13px var(--f-body);cursor:pointer}
-.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--panel)}
-details.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-top:8px}
-details.card>summary{list-style:none;cursor:pointer;padding:12px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-details.card>summary::-webkit-details-marker{display:none}
-details.card>summary::before{content:"›";font:600 18px/1 var(--f-mono);color:var(--muted);transition:transform .15s;width:12px}
-details.card[open]>summary::before{transform:rotate(90deg)}
-@media (prefers-reduced-motion:reduce){details.card>summary::before{transition:none}}
-.sum-title{font-weight:600}
-.sum-meta{color:var(--muted);font-size:13px}
-.card-body{padding:0 16px 16px;border-top:1px solid var(--line)}
-.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px 24px;margin-top:12px}
-.meta div{min-width:0} .meta b{display:block;font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-code,.mono{font-family:var(--f-mono);font-size:13px}
-.fqn{font-family:var(--f-mono);font-size:13px;color:var(--muted);word-break:break-all}
-.tbl-wrap{overflow-x:auto;margin-top:10px}
-table{border-collapse:collapse;width:100%;font-size:13.5px}
-th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
-th{font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:var(--panel2)}
-td.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--f-mono);font-size:13px}
-.codebox{position:relative;margin-top:8px}
-.codebox pre{background:var(--code);border:1px solid var(--line);border-radius:6px;padding:12px;overflow-x:auto;font:12.5px/1.5 var(--f-mono);margin:0;white-space:pre}
-.copy{position:absolute;top:6px;right:6px;font:500 12px var(--f-body);background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:4px;padding:3px 8px;cursor:pointer}
-.qtitle{font-weight:600;margin-top:14px} .qtitle span{color:var(--muted);font-weight:400}
-ul.tight,ol.tight{margin:6px 0;padding-left:20px} ul.tight li,ol.tight li{margin:3px 0}
-.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px 28px;margin-top:12px}
-.lbl{font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-top:14px}
-.note{background:var(--accent-soft);border-radius:8px;padding:12px 16px;font-size:14px}
-.steps{counter-reset:s;display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
-.steps .panel{position:relative;padding-top:30px}
-.steps .panel::before{counter-increment:s;content:counter(s);position:absolute;top:10px;left:16px;font:600 12px var(--f-mono);color:var(--accent)}
-.steps p{margin:4px 0 0;color:var(--muted);font-size:13.5px}
-.timeline{display:grid;gap:0}
-.tl-row{display:grid;grid-template-columns:120px 1fr;gap:14px;padding:10px 0;border-bottom:1px solid var(--line)}
-.tl-row .t{font:500 13px var(--f-mono);color:var(--accent)}
-.tl-row>div{min-width:0;overflow-wrap:anywhere}
-.sum-meta,.sum-title,td,.mono{overflow-wrap:anywhere}
-.tl-row .d{color:var(--muted);font-size:13.5px}
-form.req{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-form.req label{font-size:13px;color:var(--muted);display:grid;gap:4px}
-form.req .full{grid-column:1/-1}
-button.primary{background:var(--accent);color:var(--panel);border:0;border-radius:6px;padding:9px 16px;font:600 14px var(--f-body);cursor:pointer;justify-self:start}
-.mermaid-wrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px}
-.empty{color:var(--muted);padding:20px 0}
-footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-block:20px}
-@media (max-width:560px){h1{font-size:25px}.tl-row{grid-template-columns:1fr;gap:2px}.search{max-width:none}}
+  --tint-orange:#2C1A11; --tint-sun:#2A2410; --tint-mint:#122820; --tint-sky:#10252C; --band-white:#1C1511;
+  --orange:#FF6A33; --orange-deep:#E8602C; --amber:#FFAA45; --sun:#FFD03A; --orange-ink:#FF9C70;
+  --bg:#15100D; --surface:#201814; --surface-2:#2B201A; --surface-3:#1A1410;
+  --ink:#F8EEE7; --muted:#C2B0A3; --faint:#8E7F74; --line:#33271F; --line-strong:#47362B;
+  --crit:#FF6B83; --crit-soft:#3A161D; --warn:#FFB560; --warn-soft:#3A2913; --ok:#4FD69C; --ok-soft:#133224;
+  --code-bg:#0F0B09; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25); --shadow-lg:0 24px 60px rgba(0,0,0,.5); color-scheme:dark}
 
-/* login gate + history strip */
-#gate{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:16px}
-#gate form{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:26px;width:100%;max-width:360px;display:flex;flex-direction:column;gap:10px}
-#gate h2{margin:0;font:700 22px/1.2 var(--f-display)}
-#gate p{margin:0;color:var(--muted);font-size:13.5px}
-#gate .err{color:var(--crit);font-size:13px;min-height:1.2em}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16.5px/1.65 var(--f-body);-webkit-font-smoothing:antialiased}
+a{color:var(--orange-ink);text-decoration-thickness:1.5px;text-underline-offset:3px}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--orange);outline-offset:2px;border-radius:8px}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left));padding-right:max(20px,env(safe-area-inset-right))}
+.mono{font-family:var(--f-mono);font-size:.85em}
+.muted{color:var(--muted)}
+h1,h2,.display{font-family:var(--f-display);font-weight:400;letter-spacing:.015em;text-transform:uppercase;line-height:1}
+h1{font-size:clamp(44px,6vw,64px);margin:0 0 14px}
+h2{font-size:clamp(28px,3.4vw,36px);margin:0 0 8px}
+h3{font-size:19px;line-height:1.35;margin:0;font-weight:700;letter-spacing:-.01em}
+p{margin:0}
+.lede{font-size:18px;color:var(--muted);max-width:680px}
+.section{margin-top:72px}
+.section-head{margin-bottom:24px}
+.section-head p{color:var(--muted);margin-top:6px}
+.page-head{padding:64px 0 44px}
+.kicker{font:700 12.5px/1.3 var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- header ---------- */
+header.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:20px;padding-block:14px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink);flex-shrink:0}
+.brand .mark{width:36px;height:32px}
+.brand .name{font:400 26px/1 var(--f-display);text-transform:uppercase;letter-spacing:.03em}
+nav.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;justify-content:center}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs a{flex-shrink:0;padding:9px 16px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:600;font-size:15px;white-space:nowrap}
+nav.tabs a:hover{color:var(--ink)}
+nav.tabs a[aria-current="page"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.top-actions{display:flex;gap:8px;flex-shrink:0}
+.icon-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;cursor:pointer;color:var(--muted)}
+.icon-btn:hover{color:var(--ink);border-color:var(--line-strong)}
+.icon-btn svg{width:18px;height:18px}
+@media (max-width:900px){.bar{flex-wrap:wrap;gap:10px}nav.tabs{order:3;flex-basis:100%;justify-content:flex-start;max-width:100%}.top-actions{margin-left:auto}}
+
+/* ---------- controls ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;padding:13px 22px;font-weight:700;font-size:15.5px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn.primary{background:var(--orange);color:#fff}
+.btn.primary:hover{background:var(--orange-deep)}
+.link-btn{border:0;background:none;padding:0;color:var(--orange-ink);font-weight:700;cursor:pointer}
+.inp,.sel{width:100%;border:1.5px solid var(--line-strong);background:var(--surface);color:var(--ink);border-radius:var(--r-sm);padding:12px 16px;font:500 15.5px var(--f-body)}
+.sel{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2372675F' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px}
+.inp:focus,.sel:focus{border-color:var(--orange);outline:0}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{border:1.5px solid var(--line-strong);background:var(--surface);color:var(--ink);border-radius:999px;padding:8px 16px;font-weight:600;font-size:14.5px;cursor:pointer;line-height:1.2}
+.chip:hover{border-color:var(--ink)}
+.seg{display:inline-flex;background:var(--surface-2);border-radius:999px;padding:4px;gap:2px}
+.seg button{border:0;background:transparent;border-radius:999px;padding:9px 18px;font-weight:700;font-size:14.5px;cursor:pointer;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.tag{display:inline-block;border-radius:999px;padding:3px 11px;font-size:13px;font-weight:600;background:var(--surface-2);color:var(--muted);white-space:nowrap}
+.pill{display:inline-block;border-radius:999px;padding:3px 11px;font:700 11.5px/1.5 var(--f-body);letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+.pill.critical{background:var(--crit-soft);color:var(--crit)} .pill.warning{background:var(--warn-soft);color:var(--warn)}
+.pill.info,.pill.neutral{background:var(--surface-2);color:var(--muted)} .pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.star{background:var(--sun);color:#3A2600}
+
+/* ---------- cards ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:28px;box-shadow:var(--shadow)}
+.grid{display:grid;gap:24px}
+.g2{grid-template-columns:repeat(auto-fill,minmax(min(100%,440px),1fr))}
+.g3{grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr))}
+.g4{grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr))}
+a.card{text-decoration:none;color:inherit;transition:transform .15s,box-shadow .15s;display:flex;flex-direction:column}
+a.card:hover,.tcard:hover{transform:translateY(-2px);box-shadow:0 2px 4px rgba(70,35,10,.05),0 14px 32px rgba(70,35,10,.09)}
+.card-link{display:inline-block;margin-top:auto;padding-top:18px;color:var(--orange-ink);font-weight:700}
+
+/* ---------- hero (brand shape: flat left, top edge rising 3.6deg on the right) ---------- */
+.hero{position:relative;margin-top:56px;color:#fff;isolation:isolate;padding:clamp(40px,6vw,76px) clamp(28px,6vw,72px);overflow:hidden;border-radius:var(--r-xl)}
+.hero::before{content:"";position:absolute;inset:0;z-index:-2;background:var(--orange);clip-path:polygon(0 22px,52% 22px,100% 0,100% 100%,0 100%)}
+.hero .blob{position:absolute;z-index:-1;pointer-events:none}
+.hero h1{color:#fff;font-size:clamp(48px,7vw,80px);max-width:640px}
+.hero p{color:rgba(255,255,255,.92);font-size:18.5px;max-width:540px}
+.searchbox{display:flex;align-items:center;gap:12px;background:#fff;color:#1D1714;border-radius:999px;padding:7px 7px 7px 22px;max-width:620px;margin-top:32px;box-shadow:0 12px 32px rgba(100,30,0,.22)}
+.searchbox input{flex:1;border:0;outline:0;background:transparent;font:500 17px var(--f-body);color:#1D1714;min-width:0;padding:10px 0}
+.quick{margin-top:22px;max-width:640px}
+.quick .chip{background:transparent;border-color:rgba(255,255,255,.55);color:#fff}
+.quick .chip:hover{background:#fff;border-color:#fff;color:var(--orange-ink)}
+@media (max-width:560px){.searchbox .btn span{display:none}.searchbox .btn{padding:12px 16px}}
+
+/* ---------- home cards ---------- */
+.stat-v{font:400 52px/1 var(--f-display);margin:14px 0 6px}
+.status{display:flex;align-items:center;gap:12px;margin:16px 0 4px;font-weight:700;font-size:18px}
+.dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.start-card h3{margin-top:10px}
+.start-card p{color:var(--muted);margin-top:8px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+
+/* ---------- find data ---------- */
+.toolbar{display:grid;grid-template-columns:minmax(0,2fr) repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:900px){.toolbar{grid-template-columns:1fr 1fr}.toolbar .q{grid-column:1/-1}}
+@media (max-width:520px){.toolbar{grid-template-columns:1fr}}
+.toolbar-2{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;margin:20px 0 0}
+.toggle{display:inline-flex;align-items:center;gap:10px;font-size:15px;font-weight:600;color:var(--muted);cursor:pointer}
+.toggle input{width:18px;height:18px;accent-color:var(--orange)}
+.tcard{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:28px;box-shadow:var(--shadow);cursor:pointer;text-align:left;transition:transform .15s,box-shadow .15s;width:100%}
+.tcard .top{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:24px}
+.tcard h3{margin-top:12px;font-size:20px}
+.tcard .sum{color:var(--muted);margin-top:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1}
+.meta3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:22px;padding-top:20px;border-top:1px solid var(--line)}
+.meta3 .k{display:block;font-size:12.5px;font-weight:600;color:var(--faint)}
+.meta3 .v{display:block;font-weight:600;font-size:15px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tcard .foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:20px;font-size:14.5px}
+.tcard .foot .go{color:var(--orange-ink);font-weight:700;flex-shrink:0}
+.empty{padding:56px 24px;text-align:center;color:var(--muted)}
+.empty .display{font-size:34px;color:var(--ink);margin-bottom:10px}
+.gcard h3{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.tlist{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.tlink{border:1.5px solid var(--line-strong);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:600;background:var(--surface);cursor:pointer;color:var(--ink)}
+.tlink:hover{border-color:var(--orange);color:var(--orange-ink)}
+
+/* ---------- detail drawer ---------- */
+.scrim{position:fixed;inset:0;background:rgba(20,10,5,.35);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(760px,100%);background:var(--bg);z-index:41;transform:translateX(102%);visibility:hidden;transition:transform .25s ease,visibility .25s;overflow-y:auto;box-shadow:var(--shadow-lg);overscroll-behavior:contain}
+body.drawer-open .scrim{opacity:1;pointer-events:auto}
+body.drawer-open .drawer{transform:none;visibility:visible}
+body.drawer-open{overflow:hidden}
+.drawer-head{position:sticky;top:0;z-index:2;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);display:flex;justify-content:space-between;align-items:center;padding:16px 36px;border-bottom:1px solid var(--line)}
+.drawer-body{padding:36px 36px 72px}
+@media (max-width:560px){.drawer-head{padding:14px 20px}.drawer-body{padding:24px 20px 56px}}
+.drawer h2{font-size:clamp(34px,5vw,46px);margin-top:12px}
+.fqn{display:flex;align-items:center;gap:10px;margin-top:12px;color:var(--muted);font-family:var(--f-mono);font-size:13px;word-break:break-all}
+.copy-mini{border:0;background:var(--surface-2);border-radius:999px;padding:4px 12px;font:600 12.5px var(--f-body);cursor:pointer;color:var(--ink);flex-shrink:0}
+.copy-mini:hover{background:var(--orange);color:#fff}
+.dsec{margin-top:44px}
+.dsec>.kicker{display:block;margin-bottom:14px}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden}
+@media (max-width:520px){.facts{grid-template-columns:1fr}}
+.fact{background:var(--surface);padding:18px 22px}
+.fact .k{font-size:13px;font-weight:600;color:var(--faint)}
+.fact .v{font-weight:600;margin-top:4px;overflow-wrap:anywhere}
+.fact .v small{display:block;font-weight:500;color:var(--muted);font-size:13.5px;margin-top:2px}
+.collist{border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface);overflow:hidden}
+.colrow{display:grid;grid-template-columns:minmax(0,220px) 1fr;gap:18px;padding:15px 22px;border-bottom:1px solid var(--line)}
+.colrow:last-child{border-bottom:0}
+.colrow b{font-family:var(--f-mono);font-weight:500;font-size:13.5px;overflow-wrap:anywhere}
+.colrow b small{display:block;font-family:var(--f-body);color:var(--faint);font-size:12px;font-weight:600;margin-top:2px}
+.colrow span{color:var(--muted);font-size:15px}
+@media (max-width:520px){.colrow{grid-template-columns:1fr;gap:4px}}
+.watch{background:var(--warn-soft);border-radius:var(--r-md);padding:22px 26px}
+.games{display:flex;flex-wrap:wrap;gap:8px}
+.gchip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;background:var(--surface);border:1px solid var(--line);padding:6px 13px;font-size:14px;font-weight:600}
+.gchip i{font-style:normal;font-size:11.5px;font-weight:700;color:var(--faint)}
+.kv{display:grid;grid-template-columns:120px minmax(0,1fr);gap:10px 18px;font-size:15px}
+.kv span{overflow-wrap:anywhere}
+.kv b{color:var(--faint);font-weight:600}
+@media (max-width:520px){.kv{grid-template-columns:minmax(0,1fr);gap:2px}.kv b{margin-top:8px}}
+
+/* ---------- code / queries ---------- */
+.codebox{position:relative;background:var(--code-bg);color:var(--code-ink);border-radius:var(--r-md);margin-top:14px}
+.codebox pre{margin:0;padding:20px 22px;overflow-x:auto;font:13.5px/1.7 var(--f-mono);white-space:pre}
+.codebox .copy{position:absolute;top:12px;right:12px;border:0;border-radius:999px;background:var(--orange);color:#fff;font:700 12.5px var(--f-body);padding:7px 14px;cursor:pointer}
+.qitem{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);margin-bottom:16px}
+.qitem>summary{list-style:none;cursor:pointer;padding:24px 28px;display:grid;grid-template-columns:1fr auto;gap:6px 20px;align-items:center}
+.qitem>summary::-webkit-details-marker{display:none}
+.qitem>summary .sub{grid-column:1;color:var(--muted);font-size:15px}
+.qitem>summary .act{grid-row:1/3;grid-column:2;color:var(--orange-ink);font-weight:700;font-size:14.5px;white-space:nowrap}
+.qitem[open]>summary .act .o{display:none} .qitem:not([open])>summary .act .c{display:none}
+.qitem .body{padding:0 28px 28px}
+.qitem .from{display:flex;flex-wrap:wrap;gap:12px;align-items:center;font-size:14.5px;color:var(--muted)}
+.tips{display:grid;gap:20px;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr))}
+.tip{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:26px}
+.tip .ic{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;margin-bottom:16px;font-weight:800;background:var(--surface-2);color:var(--orange-ink)}
+.tip p{color:var(--muted);font-size:15px;margin-top:6px}
+
+/* ---------- accordions ---------- */
+.acc{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);margin-bottom:14px;box-shadow:var(--shadow)}
+.acc>summary{list-style:none;cursor:pointer;padding:22px 26px;display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.acc>summary::-webkit-details-marker{display:none}
+.acc>summary .t{font-weight:700;font-size:17px;flex:1 1 260px;min-width:0;overflow-wrap:anywhere}
+.acc>summary .m{color:var(--muted);font-size:14.5px}
+.acc .body{padding:0 26px 28px}
+.acc[open]>summary{border-bottom:1px solid var(--line);margin-bottom:24px}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px}
+@media (max-width:760px){.two{grid-template-columns:minmax(0,1fr);gap:20px}}
+ul.tight,ol.tight{margin:6px 0 0;padding-left:20px} ul.tight li,ol.tight li{margin:6px 0}
+.sublbl{font-size:13px;font-weight:700;color:var(--faint);letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface)}
+.table{width:100%;border-collapse:collapse;font-size:14.5px}
+.table th{text-align:left;font-size:12.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);padding:14px 18px;border-bottom:1px solid var(--line-strong)}
+.table td{padding:14px 18px;border-bottom:1px solid var(--line);vertical-align:top}
+.table tr:last-child td{border-bottom:0}
+.table td.m{font-family:var(--f-mono);font-size:13px}
+
+/* ---------- health ---------- */
+.hist{display:flex;align-items:flex-end;gap:5px;height:120px;margin-top:16px}
+.hist .d{flex:1 1 0;display:flex;flex-direction:column-reverse;min-width:5px;height:100%;border-radius:6px 6px 0 0;overflow:hidden}
+.hist .c{background:var(--crit)} .hist .w{background:var(--amber)}
+.hist-axis{display:flex;justify-content:space-between;color:var(--faint);font:12.5px var(--f-mono);margin-top:8px}
+.legend{display:flex;gap:18px;color:var(--muted);font-size:14px;margin-top:10px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:7px;vertical-align:-1px}
+.filters-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:0 0 24px}
+.filters-row .sel{width:auto;min-width:240px;max-width:100%}
+
+/* ---------- flows ---------- */
+.flowmap{max-width:100%;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(200px,1fr);gap:18px;overflow-x:auto;padding-bottom:6px}
+.flowcol .kicker{display:block;margin-bottom:14px}
+.fnode{background:var(--surface-3);border:1px solid var(--line-strong);border-radius:var(--r-sm);padding:12px 14px;margin-bottom:12px;font-size:14px;font-weight:600}
+.fnode small{display:block;color:var(--muted);font-weight:500;font-size:12.5px;margin-top:4px}
+.flowcol:first-child .fnode{border-color:var(--orange);background:var(--surface-2)}
+.steps{counter-reset:s;display:grid;gap:20px;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr))}
+.steps .card{position:relative;padding-top:68px}
+.steps .card::before{counter-increment:s;content:counter(s);position:absolute;top:26px;left:28px;width:28px;height:28px;border-radius:50%;background:var(--orange);color:#fff;font:700 14px/28px var(--f-body);text-align:center}
+.steps p{color:var(--muted);font-size:15px;margin-top:6px}
+form.req{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:22px}
+form.req label{display:flex;flex-direction:column;gap:8px;font-size:14px;font-weight:600}
+form.req .full{grid-column:1/-1}
+@media (max-width:640px){form.req{grid-template-columns:1fr}}
+
+/* ---------- colour bands: full-width blocks that separate each part of a page ---------- */
+.band{position:relative;padding:72px 0;background:var(--bb);box-shadow:0 0 0 100vmax var(--bb);clip-path:inset(0 -100vmax)}
+.band.tight{padding:36px 0}
+.tone-orange{--bb:var(--tint-orange)} .tone-sun{--bb:var(--tint-sun)} .tone-mint{--bb:var(--tint-mint)} .tone-sky{--bb:var(--tint-sky)} .tone-white{--bb:var(--band-white)}
+.tone-ink{--bb:#1D1714;color:#F8EEE7} .tone-ink .muted,.tone-ink .band-head p{color:#C9B9AD}
+.tone-white .card,.tone-white .tcard,.tone-white .acc,.tone-white .tip,.tone-white .src,.tone-white .qitem{background:var(--surface-3)}
+.band-head{display:flex;gap:18px;align-items:flex-start;margin-bottom:32px}
+.band-head .no{flex-shrink:0;width:48px;height:48px;border-radius:16px;background:var(--orange);color:#fff;display:grid;place-items:center;font:400 26px/1 var(--f-display)}
+.tone-sun .band-head .no{background:#2A1C00;color:var(--sun)} .tone-mint .band-head .no{background:var(--ok);color:#fff} .tone-sky .band-head .no{background:#0B6E85;color:#fff}
+.band-head h2{margin:2px 0 0}
+.band-head p{color:var(--muted);margin-top:8px;max-width:680px}
+.divider{display:flex;align-items:center;gap:14px;margin:48px 0 22px}
+.divider:first-child{margin-top:0}
+.divider .lbl{flex-shrink:0;border-radius:999px;padding:6px 14px;font:700 12.5px/1 var(--f-body);letter-spacing:.1em;text-transform:uppercase;background:var(--ink);color:var(--bg)}
+.divider::after{content:"";flex:1;height:2px;border-radius:2px;background:var(--line-strong)}
+.page-head{border-bottom:0}
+
+/* ---------- what we have ---------- */
+.families{display:grid;gap:24px;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr))}
+.fam-card{position:relative;border-radius:var(--r-lg);padding:30px;text-decoration:none;color:inherit;overflow:hidden;display:flex;flex-direction:column;min-height:210px}
+.fam-card .display{font-size:40px;margin:10px 0 10px}
+.fam-card p{font-size:15.5px}
+.fam-card .card-link{color:inherit}
+.fam-1{background:var(--orange);color:#fff}.fam-1 .kicker,.fam-1 p{color:rgba(255,255,255,.9)}
+.fam-2{background:var(--sun);color:#2A1C00}.fam-2 .kicker,.fam-2 p{color:rgba(42,28,0,.8)}
+.fam-3{background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow)}.fam-3 p{color:var(--muted)}.fam-3 .card-link{color:var(--orange-ink)}
+.fam-card:hover{transform:translateY(-2px)}
+.family{scroll-margin-top:70px}
+.family-head{display:flex;gap:18px;align-items:flex-start;margin-bottom:28px}
+.family-head .num{font:400 56px/0.9 var(--f-display);color:var(--orange)}
+.family-head p{color:var(--muted);margin-top:8px;max-width:640px}
+.subgroup{margin:40px 0 18px}
+.srcgrid{display:grid;gap:24px;grid-template-columns:repeat(auto-fill,minmax(min(100%,440px),1fr))}
+.src{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:26px 26px 14px}
+.src .hd{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.src .fr{color:var(--muted);font-size:14px;margin-top:4px}
+.items{margin-top:16px;border-top:1px solid var(--line)}
+.item{display:grid;grid-template-columns:1fr auto;gap:2px 14px;align-items:center;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:14px 10px;margin:0 -10px;width:calc(100% + 20px);border-radius:12px;cursor:pointer}
+.item:last-child{border-bottom:0}
+.item:hover{background:var(--surface-2)}
+.item b{font-weight:700;font-size:15.5px}
+.item .dt{grid-column:1;color:var(--muted);font-size:14px}
+.item .to{grid-row:1/3;grid-column:2;color:var(--orange-ink);font-size:13.5px;font-weight:700;text-align:right;max-width:190px;line-height:1.3;overflow-wrap:anywhere}
+.item .to.nd{color:var(--faint);font-weight:600}
+@media (max-width:520px){.item{grid-template-columns:1fr}.item .to{grid-row:auto;grid-column:1;text-align:left;max-width:none;margin-top:4px}}
+
+/* ---------- misc ---------- */
+section[hidden]{display:none}
+main{padding-bottom:0}
+main>section>:last-child{margin-bottom:0}
+footer{padding:28px 0 44px;color:#C9B9AD;font-size:14px;background:#1D1714;box-shadow:0 0 0 100vmax #1D1714;clip-path:inset(0 -100vmax)}
+footer a{color:var(--sun)}
+.note{background:var(--surface-2);border-radius:var(--r-md);padding:22px 26px}
+.timeline .row>div{min-width:0;overflow-wrap:anywhere}
+.timeline .row{display:grid;grid-template-columns:130px minmax(0,1fr);gap:18px;padding:14px 0;border-bottom:1px solid var(--line)}
+.timeline .row:last-child{border-bottom:0}
+.timeline .t{font-weight:700;color:var(--orange-ink)}
+.timeline .d{color:var(--muted);font-size:14px;margin-top:2px}
+@media (max-width:560px){.timeline .row{grid-template-columns:minmax(0,1fr);gap:2px}}
+
+/* ---------- login ---------- */
+#gate{position:fixed;inset:0;z-index:50;background:var(--orange);display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden}
+#gate .blob{position:absolute;pointer-events:none}
+#gate form{position:relative;background:var(--surface);color:var(--ink);border-radius:var(--r-xl);padding:40px 34px;width:100%;max-width:420px;display:flex;flex-direction:column;gap:14px;box-shadow:var(--shadow-lg)}
+#gate h2{margin:0;font-size:48px}
+#gate p{color:var(--muted);font-size:15.5px}
+#gate .err{color:var(--crit);font-size:14.5px;min-height:1.3em;font-weight:600}
 body:not(.locked) #gate{display:none}
 body.locked header.top,body.locked main,body.locked footer{display:none}
-.hbtn{border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:6px;padding:6px 10px;font:500 13px var(--f-body);cursor:pointer}
-.hbtn:hover{border-color:var(--accent);color:var(--accent)}
-.hist{display:flex;align-items:flex-end;gap:3px;height:90px;padding-top:6px}
-.hist .d{flex:1 1 0;display:flex;flex-direction:column-reverse;min-width:4px;height:100%}
-.hist .c{background:var(--crit)} .hist .w{background:var(--warn)}
-.hist-axis{display:flex;justify-content:space-between;color:var(--muted);font:12px var(--f-mono);margin-top:4px}
-.legend{display:flex;gap:14px;color:var(--muted);font-size:13px;margin-top:6px}
-.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 </style>
 </head>
 <body class="locked">
-<div id="gate"><form id="gate-form">
-  <h2>MPS DataHub</h2>
-  <p>Enter the team password. The data on this page is encrypted and only opens with it.</p>
-  <input type="text" name="username" value="mps-datahub" autocomplete="username" hidden>
-  <input class="inp" id="gate-pw" type="password" autocomplete="current-password" placeholder="Team password" required aria-label="Team password">
-  <label style="font-size:13px;color:var(--muted)"><input type="checkbox" id="gate-remember" checked> Remember on this browser</label>
-  <button class="primary" type="submit" id="gate-btn">Open</button>
-  <div class="err" id="gate-err" role="alert"></div>
-</form></div>
+
+<div id="gate">
+  <svg class="blob" style="left:-100px;top:-100px;width:340px" viewBox="0 0 200 200" aria-hidden="true"><path fill="#FAC30A" d="M44 31c27-24 79-28 108-4s33 74 13 106-62 53-98 44S4 140 6 103 17 55 44 31z"/></svg>
+  <svg class="blob" style="right:-80px;bottom:-120px;width:400px" viewBox="0 0 200 200" aria-hidden="true"><path fill="#D2501E" d="M53 22c33-17 86-6 113 22s28 77 3 107-79 45-115 31S2 128 7 92 20 39 53 22z"/></svg>
+  <form id="gate-form">
+    <h2>MPS DataHub</h2>
+    <p>Hi there! Enter the team password to open the hub.</p>
+    <input type="text" name="username" value="mps-datahub" autocomplete="username" hidden>
+    <input class="inp" id="gate-pw" type="password" autocomplete="current-password" placeholder="Team password" required aria-label="Team password">
+    <label class="toggle"><input type="checkbox" id="gate-remember" checked> Remember on this browser</label>
+    <button class="btn primary" type="submit" id="gate-btn">Open the hub</button>
+    <div class="err" id="gate-err" role="alert"></div>
+  </form>
+</div>
+
 <header class="top">
-  <div class="wrap">
-    <div class="bar">
-      <div class="brand">MPS DataHub <small id="asof"></small></div>
-      <div class="search"><input id="q" type="search" placeholder="Search tables, fields, games, issues…" aria-label="Search the hub"></div>
-      <button class="hbtn" type="button" id="btn-theme">Dark</button>
-      <button class="hbtn" type="button" id="btn-out">Sign out</button>
-    </div>
+  <div class="wrap bar">
+    <a class="brand" href="#home" aria-label="MPS DataHub home">
+      <svg class="mark" viewBox="0 0 76 68" aria-hidden="true"><path fill="#F05A22" d="M10 8h22c3 0 4 1 6 3l3 3 25-4c5-1 9 2 9 7v41c0 5-4 9-9 9H10c-5 0-9-4-9-9V17c0-5 4-9 9-9z"/><path fill="#fff" d="M18 26h8v24h-8zM31 34h8v16h-8zM44 30h8v20h-8zM57 38h7v12h-7z"/></svg>
+      <span class="name">MPS DataHub</span>
+    </a>
     <nav class="tabs" aria-label="Sections">
-      <a href="#overview">Overview</a>
-      <a href="#inventory">Table inventory</a>
-      <a href="#flows">Data flows &amp; API</a>
-      <a href="#pipelines">Sources &amp; pipelines</a>
-      <a href="#anomaly">Data anomaly</a>
-      <a href="#issues">Common issues</a>
+      <a href="#home">Home</a>
+      <a href="#have">What we have</a>
+      <a href="#find">Find data</a>
+      <a href="#queries">Queries &amp; FAQ</a>
+      <a href="#health">Data health</a>
+      <a href="#flows">Data flows</a>
     </nav>
+    <div class="top-actions">
+      <button class="icon-btn" type="button" id="btn-theme" aria-label="Switch dark / light"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+      <button class="icon-btn" type="button" id="btn-out" aria-label="Sign out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg></button>
+    </div>
   </div>
 </header>
 
 <main class="wrap">
-  <section id="s-overview">
-    <h1>One place for UA and Data to find, trust and fix BigQuery data</h1>
-    <p class="lede">Which tables to use and what their fields mean, where the data comes from, which scheduled query writes it and when, and what looks wrong today, with steps to fix it.</p>
-    <div class="grid g4" style="margin-top:18px" id="ov-stats"></div>
-    <h2>What needs attention</h2>
-    <div class="grid g2" id="ov-headlines"></div>
-    <h2>Daily timeline (ICT)</h2>
-    <div class="panel timeline" id="ov-timeline"></div>
-    <h2>Start here</h2>
-    <div class="grid g2">
-      <div class="panel"><h3>UA team</h3><ul class="tight">
-        <li><a href="#inventory">Table inventory</a>: <code>GMT_Dashboard_Output_Final</code>, <code>financial_metrics</code> and <code>roi_activity</code> come with copy-ready queries.</li>
-        <li>Numbers look off? Check <a href="#anomaly">Data anomaly</a> first, then <a href="#issues">Common issues</a>.</li>
-        <li>Need data from a new API? See <a href="#flows">Data flows &amp; API</a> for what exists and a request form.</li></ul></div>
-      <div class="panel"><h3>Data team</h3><ul class="tight">
-        <li><a href="#pipelines">Sources &amp; pipelines</a> shows which proc or scheduled query writes each table and when.</li>
-        <li>Each anomaly includes ready-to-run diagnostic and re-run SQL.</li>
-        <li>Thresholds and table docs live in <code>config/*.yaml</code> in the <code>mps_datahub</code> repo.</li></ul></div>
-    </div>
-  </section>
-
-  <section id="s-inventory" hidden>
-    <h1>Table inventory</h1>
-    <p class="lede">The tables people use most: what they mean, which fields to watch, example queries, partition and size, update schedule and owner. Schemas and producers were checked against BigQuery metadata.</p>
-    <div class="chips" id="inv-domains" role="group" aria-label="Filter by domain"></div>
-    <div id="inv-list"></div>
-    <h2>Datasets covered</h2>
-    <div class="tbl-wrap panel" style="padding:0"><table id="ds-table"></table></div>
-  </section>
-
-  <section id="s-flows" hidden>
-    <h1>Data flows &amp; API</h1>
-    <p class="lede">The data we have, the flow that brings each source in (AppsFlyer, ad networks, stores), what each flow contains, and how to request a new API source.</p>
-    <h2>Overview</h2>
-    <div class="mermaid-wrap"><pre class="mermaid" id="flow-mermaid"></pre></div>
-    <h2>Sources and what they contain</h2>
-    <div id="flow-sources"></div>
-    <h2>Request new API data</h2>
-    <div class="steps" id="req-steps"></div>
-    <details class="card"><summary><span class="sum-title">Is it feasible? Rules of thumb</span></summary><div class="card-body"><ul class="tight" id="req-rules"></ul></div></details>
-    <div class="panel" style="margin-top:14px">
-      <h3>Request form</h3>
-      <p class="lede" style="margin-bottom:10px">Fill this in, copy the text and send it to <span class="mono" id="req-email"></span>.</p>
-      <form class="req" id="req-form">
-        <label>Requester (name / team)<input class="inp" id="rq-who"></label>
-        <label>Source<select class="inp" id="rq-src"></select></label>
-        <label class="full">Business question<textarea class="inp" id="rq-q" rows="2" placeholder="e.g. D7 ROAS by creative for Dead Target on Unity"></textarea></label>
-        <label>Metrics / fields<input class="inp" id="rq-f"></label>
-        <label>Granularity<input class="inp" id="rq-g" placeholder="day × campaign × country"></label>
-        <label>History needed<input class="inp" id="rq-h" placeholder="last 90 days"></label>
-        <label>Needed by<input class="inp" id="rq-d" type="date"></label>
-        <button class="primary" type="submit">Generate request</button>
+  <!-- ================= HOME ================= -->
+  <section id="s-home">
+    <div class="hero">
+      <svg class="blob" style="right:-40px;bottom:-60px;width:min(36vw,340px)" viewBox="0 0 200 200" aria-hidden="true"><path fill="#FAC30A" d="M44 31c27-24 79-28 108-4s33 74 13 106-62 53-98 44S4 140 6 103 17 55 44 31z"/></svg>
+      <svg class="blob" style="right:min(22vw,220px);bottom:-70px;width:min(16vw,150px)" viewBox="0 0 200 200" aria-hidden="true"><path fill="#D2501E" d="M53 22c33-17 86-6 113 22s28 77 3 107-79 45-115 31S2 128 7 92 20 39 53 22z"/></svg>
+      <h1>What data do you need today?</h1>
+      <p>Search a game, a metric or a table. See where it lives, how fresh it is and who to ask.</p>
+      <form class="searchbox" id="home-search" role="search">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#72675F" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="home-q" type="search" placeholder="installs by campaign, Dead Target, ad revenue…" aria-label="Search data">
+        <button class="btn primary" type="submit"><span>Find data</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       </form>
-      <div class="codebox" id="rq-out" hidden><pre id="rq-text"></pre><button class="copy" type="button" data-copy="rq-text">Copy</button></div>
+      <div class="chips quick" id="home-topics"></div>
+    </div>
+
+    <div class="grid g3" style="margin:28px 0 72px" id="home-cards"></div>
+
+    <div class="band tone-orange">
+      <div class="band-head"><div class="no">1</div><div><h2>Start here</h2><p>Most UA questions can be answered from these tables.</p></div></div>
+      <div class="grid g3" id="home-start"></div>
+    </div>
+    <div class="band tone-sun">
+      <div class="band-head"><div class="no">2</div><div><h2>When does data land?</h2><p>Daily jobs in Vietnam time. Numbers before these times are not final.</p></div></div>
+      <div class="card"><div class="timeline" id="home-timeline"></div>
+        <button class="link-btn" type="button" id="tl-more" style="margin-top:16px">Show all jobs</button></div>
     </div>
   </section>
 
-  <section id="s-pipelines" hidden>
-    <h1>Sources, procs &amp; pipelines</h1>
-    <p class="lede">The scheduled query, proc or Airflow job behind each table, when it runs and what it reads. This comes from 14 days of <code>INFORMATION_SCHEMA.JOBS</code>.</p>
-    <h2>Pipelines</h2>
-    <div id="pipe-list"></div>
-    <h2>Curated tables → producer</h2>
-    <div class="tbl-wrap panel" style="padding:0"><table id="prod-table"></table></div>
-    <h2>Monitors that already exist</h2>
-    <div class="tbl-wrap panel" style="padding:0"><table id="mon-table"></table></div>
+  <!-- ================= WHAT WE HAVE ================= -->
+  <section id="s-have" hidden>
+    <div class="page-head"><h1>What we have</h1><p class="lede">Our data comes from two places: AppsFlyer, which measures what happens in our games, and each platform's own API (stores, mediation, ad networks). Click any item to see the table behind it.</p></div>
+    <div class="families" id="have-top" style="margin-bottom:72px"></div>
+    <div id="have-list"></div>
   </section>
 
-  <section id="s-anomaly" hidden>
-    <h1>Data anomaly</h1>
-    <p class="lede" id="an-lede"></p>
-    <div class="grid g4" style="margin-top:16px" id="an-stats"></div>
-    <div class="panel" style="margin-top:12px"><div class="lbl">Issues found per check date, last 30 days</div><div id="an-hist"></div></div>
-    <div class="chips" id="an-sev" role="group" aria-label="Filter by severity"></div>
-    <div class="chips" id="an-tables" role="group" aria-label="Filter by table"></div>
-    <div id="an-list"></div>
-    <h2>Criteria</h2>
-    <div class="tbl-wrap panel" style="padding:0"><table id="rules-table"></table></div>
-    <h2>How alerts reach the team</h2>
-    <div class="note" id="an-notify"></div>
-    <div class="lbl">Latest results in BigQuery</div>
-    <div class="codebox"><pre id="latest-sql"></pre><button class="copy" type="button" data-copy="latest-sql">Copy</button></div>
+  <!-- ================= FIND DATA ================= -->
+  <section id="s-find" hidden>
+    <div class="page-head"><h1>Find data</h1><p class="lede">Pick a table to see what is inside, where it comes from, which games, how fresh it is, the columns to watch and who to ask.</p></div>
+    <div class="band tone-orange tight">
+      <div class="toolbar">
+        <input class="inp q" id="f-q" type="search" placeholder="Search tables, columns, metrics…" aria-label="Search tables">
+        <select class="sel" id="f-topic" aria-label="I need"></select>
+        <select class="sel" id="f-game" aria-label="Game"></select>
+        <select class="sel" id="f-source" aria-label="Source"></select>
+      </div>
+      <div class="toolbar-2">
+        <div class="seg" role="group" aria-label="View" style="background:var(--surface)"><button type="button" data-view="tables" aria-pressed="true">By table</button><button type="button" data-view="games" aria-pressed="false">By game</button></div>
+        <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center">
+          <span class="muted" id="f-count" aria-live="polite"></span>
+          <label class="toggle"><input type="checkbox" id="f-all"> Data-team tables</label>
+          <button class="link-btn" type="button" id="f-reset" hidden>Clear</button>
+        </div>
+      </div>
+    </div>
+    <div class="band" style="padding-top:44px"><div id="f-list"></div></div>
   </section>
 
-  <section id="s-issues" hidden>
-    <h1>Common issues</h1>
-    <p class="lede">Known pitfalls, how to check each one, and how to fix it.</p>
-    <div class="chips" id="faq-aud" role="group" aria-label="Filter by audience"></div>
-    <div id="faq-list"></div>
+  <!-- ================= QUERIES & FAQ ================= -->
+  <section id="s-queries" hidden>
+    <div class="page-head"><h1>Example queries &amp; common issues</h1><p class="lede">Copy a ready-made query, or find out why a number looks off.</p></div>
+    <div class="band tone-sun">
+      <div class="band-head"><div class="no">1</div><div><h2>Before you query</h2><p>Four things that cause most wrong numbers.</p></div></div>
+      <div class="tips" id="q-tips"></div>
+    </div>
+    <div class="band tone-white">
+      <div class="band-head"><div class="no">2</div><div><h2>Queries &amp; issues</h2><p>Ready-made SQL, and answers to "why does this number look off?".</p></div></div>
+      <div class="toolbar-2" style="margin:0 0 24px">
+        <div class="seg" role="group" aria-label="Show"><button type="button" data-q="queries" aria-pressed="true">Example queries</button><button type="button" data-q="faq" aria-pressed="false">Common issues</button></div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;flex:1 1 360px;justify-content:flex-end">
+          <select class="sel" id="q-topic" style="width:auto;min-width:200px" aria-label="Topic"></select>
+          <input class="inp" id="q-q" type="search" placeholder="Search…" style="max-width:300px" aria-label="Search queries and issues">
+        </div>
+      </div>
+      <div id="q-list"></div>
+    </div>
   </section>
+
+  <!-- ================= DATA HEALTH ================= -->
+  <section id="s-health" hidden>
+    <div class="page-head"><h1>Data health</h1><p class="lede" id="an-lede"></p></div>
+    <div class="band tone-sun">
+      <div class="band-head"><div class="no">1</div><div><h2>Today at a glance</h2><p>Open issues from this morning's checks and the last 30 days.</p></div></div>
+      <div class="grid g4" id="an-stats"></div>
+      <div class="card" style="margin-top:24px"><span class="kicker">Issues per check date, last 30 days</span><div id="an-hist"></div></div>
+    </div>
+    <div class="band tone-white">
+      <div class="band-head"><div class="no">2</div><div><h2>Open issues</h2><p>Each issue comes with likely causes, steps and SQL to fix it.</p></div></div>
+      <div class="filters-row">
+        <div class="seg" role="group" aria-label="Severity" id="an-sev"></div>
+        <select class="sel" id="an-table" aria-label="Table"></select>
+      </div>
+      <div id="an-list"></div>
+    </div>
+    <div class="band tone-mint">
+      <div class="band-head"><div class="no">3</div><div><h2>What we check</h2></div></div>
+      <div class="tbl-wrap"><table class="table" id="rules-table"></table></div>
+      <div class="note" id="an-notify" style="margin-top:24px;background:var(--surface)"></div>
+    </div>
+  </section>
+
+  <!-- ================= FLOWS ================= -->
+  <section id="s-flows" hidden>
+    <div class="page-head"><h1>How data flows</h1><p class="lede">From the source (AppsFlyer, ad networks, stores) to the tables and dashboards you use.</p></div>
+    <div class="band tone-white">
+      <div class="band-head"><div class="no">1</div><div><h2>The big picture</h2><p>Left to right: where data starts and where it ends up.</p></div></div>
+      <div class="card"><div class="flowmap" id="flow-map"></div></div>
+    </div>
+    <div class="band tone-orange">
+      <div class="band-head"><div class="no">2</div><div><h2>Sources</h2><p>What each source contains and how it reaches BigQuery.</p></div></div>
+      <div id="flow-sources"></div>
+    </div>
+    <div class="band tone-sun">
+      <div class="band-head"><div class="no">3</div><div><h2>Need data we do not have?</h2><p>How to ask, and what we need from you.</p></div></div>
+      <div class="steps" id="req-steps"></div>
+      <details class="acc" style="margin-top:24px"><summary><span class="t">Is it feasible? Rules of thumb</span></summary><div class="body"><ul class="tight" id="req-rules"></ul></div></details>
+      <div class="card" style="margin-top:24px" id="req-card">
+        <h3>Request form</h3>
+        <p class="muted" style="margin-top:6px">Fill it in, copy the text and send it to <span class="mono" id="req-email"></span>.</p>
+        <form class="req" id="req-form">
+          <label>Requester (name / team)<input class="inp" id="rq-who"></label>
+          <label>Source<select class="sel" id="rq-src"></select></label>
+          <label class="full">Business question<textarea class="inp" id="rq-q" rows="2" placeholder="e.g. D7 ROAS by creative for Dead Target on Unity"></textarea></label>
+          <label>Metrics / fields<input class="inp" id="rq-f"></label>
+          <label>Granularity<input class="inp" id="rq-g" placeholder="day x campaign x country"></label>
+          <label>History needed<input class="inp" id="rq-h" placeholder="last 90 days"></label>
+          <label>Needed by<input class="inp" id="rq-d" type="date"></label>
+          <div class="full"><button class="btn primary" type="submit">Generate request</button></div>
+        </form>
+        <div class="codebox" id="rq-out" hidden><pre id="rq-text"></pre><button class="copy" type="button" data-copy="rq-text">Copy</button></div>
+      </div>
+    </div>
+    <div class="band tone-white" id="pipelines" style="scroll-margin-top:70px">
+      <div class="band-head"><div class="no">4</div><div><span class="kicker">For the data team</span><h2 style="margin-top:6px">Pipelines</h2><p>The job behind each table, when it runs and what it writes.</p></div></div>
+      <div class="divider"><span class="lbl">Scheduled jobs</span></div>
+      <div id="pipe-list"></div>
+      <div class="divider"><span class="lbl">Table → producer</span></div>
+      <div class="tbl-wrap"><table class="table" id="prod-table"></table></div>
+      <div class="divider"><span class="lbl">Existing monitors</span></div>
+      <div class="tbl-wrap"><table class="table" id="mon-table"></table></div>
+      <div class="divider"><span class="lbl">Datasets</span></div>
+      <div class="tbl-wrap"><table class="table" id="ds-table"></table></div>
+    </div>
+  </section>
+
 </main>
 <footer class="wrap" id="foot"></footer>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dr-title">
+  <div class="drawer-head"><button class="link-btn" type="button" id="dr-close">← Back</button><button class="icon-btn" type="button" id="dr-x" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="drawer-body" id="dr-body"></div>
+</aside>
 
 <script>
 let D = null;
 const $ = s => document.querySelector(s);
-const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt = v => v == null ? '–' : (typeof v === 'number' ? v.toLocaleString('en-US', {maximumFractionDigits: 2}) : esc(v));
 let uid = 0;
-const code = (sql) => { const id = 'c' + (++uid); return `<div class="codebox"><pre id="${id}">${esc(sql.trim())}</pre><button class="copy" type="button" data-copy="${id}">Copy</button></div>`; };
-const pill = (sev) => `<span class="pill ${esc(sev)}">${esc(sev)}</span>`;
+const code = sql => { const id = 'c' + (++uid); return `<div class="codebox"><pre id="${id}">${esc(String(sql || '').trim())}</pre><button class="copy" type="button" data-copy="${id}">Copy</button></div>`; };
+const pill = sev => `<span class="pill ${esc(sev)}">${esc(sev)}</span>`;
 const SEV = {critical: 0, warning: 1, info: 2};
-let query = '';
+const UA_AUD = t => (t.audience || []).some(a => ['UA', 'Management', 'Finance'].includes(a)) || t.start_here;
+const tableById = id => (D.tables || []).find(t => t.id === id);
+const opt = (v, label, sel) => `<option value="${esc(v)}"${v === sel ? ' selected' : ''}>${esc(label)}</option>`;
 
 /* ---------- routing ---------- */
-const VIEWS = ['overview', 'inventory', 'flows', 'pipelines', 'anomaly', 'issues'];
+const VIEWS = ['home', 'have', 'find', 'queries', 'health', 'flows'];
+const ALIAS = {overview: 'home', inventory: 'find', issues: 'queries', anomaly: 'health', pipelines: 'flows', sources: 'have'};
+let curView = 'home';
 function route() {
-  const v = VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'overview';
+  const raw = location.hash.slice(1).split('?')[0];
+  const h = ALIAS[raw] || raw;
+  const v = VIEWS.includes(h) ? h : 'home';
+  const changed = v !== curView; curView = v;
   VIEWS.forEach(n => { $('#s-' + n).hidden = n !== v; });
-  document.querySelectorAll('nav.tabs a').forEach(a => a.setAttribute('aria-current', a.getAttribute('href') === '#' + v ? 'page' : 'false'));
-  if (v === 'flows') renderMermaid();
+  $$('nav.tabs a').forEach(a => a.setAttribute('aria-current', a.getAttribute('href') === '#' + v ? 'page' : 'false'));
+  const q = new URLSearchParams(location.hash.split('?')[1] || '');
+  if (v === 'find') {
+    if (q.get('q') != null) { F.q = q.get('q'); $('#f-q').value = F.q; }
+    if (q.get('topic')) F.topic = q.get('topic');
+    renderFind();
+  }
+  if (q.get('table')) openTable(q.get('table'));
+  else if (q.get('item')) openItem(q.get('item'));
+  else { closeDrawer(true); if (changed) scrollTo(0, 0); }
+  if (raw === 'pipelines') setTimeout(() => $('#pipelines').scrollIntoView(), 30);
 }
-addEventListener('hashchange', () => { route(); scrollTo(0, 0); });
+addEventListener('hashchange', route);
+const viewHash = () => '#' + curView;
 
-/* ---------- overview ---------- */
-function overview() {
-  const inc = D.incidents, crit = inc.filter(i => i.severity === 'critical').length, warn = inc.filter(i => i.severity === 'warning').length;
-  $('#asof').textContent = 'data ' + D.check_day;
-  $('#ov-stats').innerHTML = [
-    ['Datasets', D.datasets.length, '2 projects, US multi-region'],
-    ['Curated tables', D.tables.length, D.tables.filter(t => t.monitored).length + ' monitored daily'],
-    ['Open issues', `<span style="color:var(--crit)">${crit}</span> / <span style="color:var(--warn)">${warn}</span>`, 'critical / warning, run ' + esc(D.run.run_at)],
-    ['Pipelines mapped', D.pipelines.length, 'scheduled queries, Airflow, API loads'],
-  ].map(([k, v, s]) => `<div class="panel stat"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`).join('');
-  $('#ov-headlines').innerHTML = !inc.length ? `<div class="panel headline">${'<span class="pill ok">all clear</span>'}<h3 style="margin-top:8px">No open issues for ${esc(D.check_day)}</h3><p>Last check: ${esc(D.run.run_at)}.</p></div>` : D.headlines.map(h => `<div class="panel headline ${h.severity}">${pill(h.severity)} <h3 style="margin-top:8px">${esc(h.title)}</h3><p>${esc(h.text)}</p></div>`).join('')
-    + `<div class="panel"><a href="#anomaly">See all ${inc.length} issues with fix steps →</a></div>`;
-  const tl = [...D.pipelines].map(p => ({t: p.schedule_ict, n: p.name, d: p.type + ' · ' + (p.writes || []).slice(0, 3).join(', ')}));
-  tl.push({t: 'daily ~10:45', n: 'UyenTHD - DataHub anomaly checks', d: 'BQ scheduled query · writes uyenthd_datahub_monitor.anomaly_log'});
-  const key = s => { const m = String(s).match(/(\d{1,2}):(\d{2})/); return m ? +m[1] * 60 + +m[2] : (String(s).includes('2h') ? -1 : 9999); };
+function allTopics() { return D.topics && D.topics.length ? D.topics : [...new Set(D.tables.flatMap(t => t.topics || []))]; }
+
+/* ---------- HOME ---------- */
+function home() {
+  const topics = allTopics().filter(t => t !== 'Raw events');
+  $('#home-topics').innerHTML = topics.slice(0, 7).map(t => `<button class="chip" type="button" data-topic="${esc(t)}">${esc(t)}</button>`).join('');
+  $('#home-topics').onclick = e => { const b = e.target.closest('[data-topic]'); if (b) location.hash = '#find?topic=' + encodeURIComponent(b.dataset.topic); };
+  $('#home-search').onsubmit = e => { e.preventDefault(); location.hash = '#find?q=' + encodeURIComponent($('#home-q').value.trim()); };
+
+  const inc = D.incidents || [], crit = inc.filter(i => i.severity === 'critical').length, warn = inc.filter(i => i.severity === 'warning').length;
+  const games = (D.games || []).filter(g => g.known);
+  const statusColor = crit ? 'var(--crit)' : warn ? 'var(--amber)' : 'var(--ok)';
+  $('#home-cards').innerHTML = [
+    `<a class="card" href="#health"><span class="kicker">Today's data</span>
+      <div class="status"><span class="dot" style="background:${statusColor}"></span>${crit ? `${crit} critical issue${crit > 1 ? 's' : ''}` : warn ? 'Looks fine, a few warnings' : 'All clear'}</div>
+      <p class="muted">${crit || warn ? `${crit} critical · ${warn} warning` : 'No open issues for ' + esc(D.check_day)}</p>
+      <span class="card-link">Data health →</span></a>`,
+    `<a class="card" href="#have"><span class="kicker">What we have</span>
+      <div class="stat-v">${countSources()} sources</div>
+      <p class="muted">AppsFlyer + store, mediation and ad network APIs${games.length ? ' · ' + games.length + ' games' : ''}</p>
+      <span class="card-link">See all data →</span></a>`,
+    `<a class="card" href="#queries"><span class="kicker">Write a query</span>
+      <div class="stat-v">${D.tables.reduce((n, t) => n + (t.example_queries || []).length, 0)} queries</div>
+      <p class="muted">Copy, change the game, run.</p>
+      <span class="card-link">Example queries →</span></a>`,
+  ].join('');
+
+  const start = D.tables.filter(t => t.start_here);
+  $('#home-start').innerHTML = (start.length ? start : D.tables.slice(0, 3)).map(t => `<a class="card start-card" href="#home?table=${esc(t.id)}">
+      <span class="kicker">${esc((t.topics || []).slice(0, 2).join(' · '))}</span><h3>${esc(t.name)}</h3><p>${esc(t.summary)}</p>
+      <span class="card-link">${esc((t.lag_label || '').split(' ')[0])} · updates ${esc(t.update_time || '')}</span></a>`).join('');
+
+  const tl = (D.pipelines || []).map(p => ({t: p.schedule_ict, n: p.name, d: (p.writes || []).slice(0, 2).join(', ')}));
+  tl.push({t: 'daily ~10:45', n: 'DataHub checks', d: 'Anomaly checks on the tables'});
+  tl.push({t: 'daily ~11:17', n: 'This page refreshes', d: 'And the email / Teams / Discord digest goes out'});
+  const key = s => { const m = String(s).match(/(\d{1,2}):(\d{2})/); return m ? +m[1] * 60 + +m[2] : (/2h|hour/.test(s) ? -1 : 9999); };
   tl.sort((a, b) => key(a.t) - key(b.t));
-  $('#ov-timeline').innerHTML = tl.map(r => `<div class="tl-row"><div class="t">${esc(r.t.replace('daily ', ''))}</div><div><div>${esc(r.n)}</div><div class="d">${esc(r.d)}</div></div></div>`).join('');
+  const short = s => String(s).replace('daily ', '').replace(/\s*\(.*?\)/g, '').replace(' and ', ' & ');
+  let all = false;
+  const draw = () => {
+    $('#home-timeline').innerHTML = (all ? tl : tl.slice(0, 6)).map(r => `<div class="row"><div class="t">${esc(short(r.t))}</div><div><div style="font-weight:600">${esc(r.n)}</div><div class="d">${esc(r.d)}</div></div></div>`).join('');
+    $('#tl-more').textContent = all ? 'Show less' : `Show all ${tl.length} jobs`; $('#tl-more').hidden = tl.length <= 6;
+  };
+  draw(); $('#tl-more').onclick = () => { all = !all; draw(); };
 }
 
-/* ---------- inventory ---------- */
-let invDomain = 'All';
-function tableCard(t) {
-  const o = t.owner || {}, pb = t.produced_by || {};
-  const kf = (t.key_fields || []).length ? `<div class="tbl-wrap"><table><tr><th>Field</th><th>Type</th><th>Note</th></tr>${t.key_fields.map(f => `<tr><td class="mono">${esc(f.name)}</td><td class="mono">${esc(f.type)}</td><td>${esc(f.note)}</td></tr>`).join('')}</table></div>` : '';
-  const qs = (t.example_queries || []).map(q => `<div class="qtitle">${esc(q.title)} <span>· ${esc(q.use_case || '')}</span></div>${code(q.sql)}`).join('');
-  const cav = (t.caveats || []).length ? `<div class="lbl">Watch out</div><ul class="tight">${t.caveats.map(c => `<li>${esc(c)}</li>`).join('')}</ul>` : '';
-  const rerun = pb.rerun_sql ? `<div class="lbl">Re-run</div>${code(pb.rerun_sql.replace(/\{n_days\}/g, '<n_days>').replace(/\{date\}/g, '<YYYY-MM-DD>'))}` : '';
-  return `<details class="card" data-search="${esc(JSON.stringify(t).toLowerCase())}" data-domain="${esc(t.domain)}">
-    <summary><span class="sum-title">${esc(t.name)}</span><span class="pill neutral">${esc(t.domain)}</span><span class="pill neutral">${esc(t.layer)}</span>${t.monitored ? '<span class="pill ok">monitored</span>' : ''}<span class="sum-meta">${esc((t.audience || []).join(' · '))}</span></summary>
-    <div class="card-body">
-      <p class="fqn" style="margin-top:12px">${esc(t.fqn)}</p>
-      <p style="margin:6px 0 0">${esc(t.description)}</p>
-      <div class="meta">
-        <div><b>Grain</b>${esc(t.grain)}</div><div><b>Partition</b><span class="mono">${esc(t.partition)}</span></div>
-        <div><b>Size</b>${esc(t.size_hint || '–')}</div><div><b>Update schedule</b>${esc(t.update_schedule)}</div>
-        <div><b>Produced by</b><span class="mono">${esc(pb.name || '–')}</span></div><div><b>Pipeline</b>${esc(pb.pipeline || '–')}</div>
-        <div><b>Owner</b>${esc(o.name || '–')} ${o.email ? '<span class="mono">' + esc(o.email) + '</span>' : ''}</div>
-        <div><b>Upstream</b><span class="mono">${esc((t.upstream || []).join(', ') || '–')}</span></div>
-      </div>
-      ${kf ? '<div class="lbl">Key fields</div>' + kf : ''}
-      ${qs ? '<div class="lbl">Example queries</div>' + qs : ''}
-      ${cav}${rerun}
-      ${t.monitored ? `<div class="lbl">Daily checks</div><p style="margin:4px 0 0" class="mono">${esc(t.checks.join(' · '))} · complete day = today − ${esc(t.lag)}</p>` : ''}
-    </div></details>`;
-}
-function inventory() {
-  const domains = ['All', ...new Set(D.tables.map(t => t.domain))];
-  $('#inv-domains').innerHTML = domains.map(d => `<button class="chip" type="button" aria-pressed="${d === invDomain}" data-dom="${esc(d)}">${esc(d)}</button>`).join('');
-  $('#inv-list').innerHTML = D.tables.map(tableCard).join('');
-  $('#ds-table').innerHTML = '<tr><th>Dataset</th><th>Layer</th><th>Tables</th><th>Size (GB)</th><th>Purpose</th><th>Owner</th></tr>' +
-    D.datasets.map(d => `<tr><td class="mono">${esc(d.id)}</td><td>${esc(d.layer)}</td><td class="num">${fmt(d.tables)}</td><td class="num">${fmt(d.size_gb)}</td><td>${esc(d.purpose)}</td><td>${esc(d.owner)}</td></tr>`).join('');
-  filterInventory();
-}
-function filterInventory() {
-  let n = 0;
-  document.querySelectorAll('#inv-list details').forEach(el => {
-    const ok = (invDomain === 'All' || el.dataset.domain === invDomain) && (!query || el.dataset.search.includes(query));
-    el.hidden = !ok; if (ok) n++;
-  });
-  document.querySelectorAll('#inv-domains .chip').forEach(c => c.setAttribute('aria-pressed', c.dataset.dom === invDomain));
-}
-$('#inv-domains').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) { invDomain = b.dataset.dom; filterInventory(); } });
-
-/* ---------- flows ---------- */
-let mermaidDone = false;
-function renderMermaid() {
-  if (mermaidDone) return; mermaidDone = true;
-  const ids = {}; let k = 0; const id = n => ids[n] || (ids[n] = 'n' + (++k));
-  const lines = ['flowchart LR'];
-  (D.flows.edges || []).forEach(([a, b, l]) => lines.push(`  ${id(a)}["${a.replace(/"/g, "'")}"] -->|${String(l || '').replace(/[|"]/g, ' ')}| ${id(b)}["${b.replace(/"/g, "'")}"]`));
-  $('#flow-mermaid').textContent = lines.join('\n');
-}
-function flows() {
-  const st = {live: ['ok', 'live'], available: ['warning', 'available, not ingested'], not_available: ['critical', 'not available']};
-  $('#flow-sources').innerHTML = (D.flows.sources || []).map(s => {
-    const [cls, lab] = st[s.status] || ['neutral', s.status];
-    return `<details class="card" data-search="${esc(JSON.stringify(s).toLowerCase())}"><summary><span class="sum-title">${esc(s.name)}</span><span class="pill neutral">${esc(s.kind)}</span><span class="pill ${cls}">${esc(lab)}</span></summary>
-      <div class="card-body"><div class="two"><div><div class="lbl">Contains</div><ul class="tight">${(s.contains || []).map(c => `<li>${esc(c)}</li>`).join('')}</ul><div class="lbl">Grain</div><div>${esc(s.grain)}</div></div>
-      <div><div class="meta" style="grid-template-columns:1fr"><div><b>Lands in</b><span class="mono">${esc(s.landing)}</span></div><div><b>Delivery</b>${esc(s.delivery)}</div><div><b>Pipeline</b>${esc(s.pipeline)}</div><div><b>Latency</b>${esc(s.latency)}</div><div><b>Owner</b>${esc(s.owner)}</div></div></div></div>
-      ${s.notes ? `<p class="note" style="margin-top:12px">${esc(s.notes)}</p>` : ''}</div></details>`;
+/* ---------- WHAT WE HAVE ---------- */
+function famSources(f) { return (f.sources || []).concat(...(f.groups || []).map(g => g.sources || [])); }
+function countSources() { return (D.catalog || []).filter(f => f.id !== 'combined').reduce((n, f) => n + famSources(f).filter(s => s.kind !== 'Combined').length, 0); }
+function have() {
+  const cat = D.catalog || [];
+  if (!cat.length) { $('#have-list').innerHTML = '<div class="card empty"><div class="display">Coming soon</div>The source list appears after the next refresh.</div>'; return; }
+  $('#have-top').innerHTML = cat.map((f, i) => {
+    const srcs = famSources(f), items = srcs.reduce((n, s) => n + (s.items || []).length, 0);
+    return `<a class="fam-card fam-${Math.min(i + 1, 3)}" href="#fam-${esc(f.id)}"><span class="kicker">${String(i + 1).padStart(2, '0')} · ${srcs.length} source${srcs.length > 1 ? 's' : ''} · ${items} kinds of data</span>
+      <div class="display">${esc(f.name)}</div><p>${esc(f.blurb || '')}</p><span class="card-link">See what's inside ↓</span></a>`;
   }).join('');
-  const rp = D.flows.request_process || {};
-  $('#req-steps').innerHTML = (rp.steps || []).map(s => `<div class="panel"><h3>${esc(s.title)}</h3><p>${esc(s.detail)}</p></div>`).join('');
+  $('#have-top').onclick = e => { const a = e.target.closest('a[href^="#fam-"]'); if (a) { e.preventDefault(); document.getElementById(a.getAttribute('href').slice(1)).scrollIntoView({behavior: 'smooth'}); } };
+  let k = 0;
+  const itemRow = (it, s) => {
+    const t = it.table && tableById(it.table);
+    if (t) return `<button class="item" type="button" data-open="${esc(t.id)}"><b>${esc(it.label)}</b><span class="dt">${esc(it.detail || '')}</span><span class="to">${esc(t.name)} →</span></button>`;
+    const key = 'i' + (++k); ITEMS[key] = {...it, source: s.name, freshness: s.freshness};
+    return `<button class="item" type="button" data-item="${key}"><b>${esc(it.label)}</b><span class="dt">${esc(it.detail || '')}</span><span class="to nd">${esc((it.fqn || '').split('.').pop())} →</span></button>`;
+  };
+  const srcCard = s => `<div class="src"><div class="hd"><div><h3>${esc(s.name)}</h3><div class="fr">${esc(s.freshness || '')}</div></div><span class="tag">${esc(s.kind || '')}</span></div>
+    <div class="items">${(s.items || []).map(it => itemRow(it, s)).join('')}</div></div>`;
+  const tones = ['tone-orange', 'tone-sun', 'tone-mint', 'tone-sky'];
+  $('#have-list').innerHTML = cat.map((f, i) => `<div class="band family ${tones[i % tones.length]}" id="fam-${esc(f.id)}">
+      <div class="band-head"><div class="no">${i + 1}</div><div><h2>${esc(f.name)}</h2><p>${esc(f.blurb || '')}</p></div></div>
+      ${(f.sources || []).length ? `<div class="srcgrid">${f.sources.map(srcCard).join('')}</div>` : ''}
+      ${(f.groups || []).map(g => `<div class="divider"><span class="lbl">${esc(g.name)}</span></div><div class="srcgrid">${(g.sources || []).map(srcCard).join('')}</div>`).join('')}
+    </div>`).join('');
+}
+
+/* ---------- FIND DATA ---------- */
+const F = {q: '', game: '', topic: '', source: '', all: false, view: 'tables'};
+function findInit() {
+  const games = D.games || [];
+  $('#f-topic').innerHTML = opt('', 'I need… (anything)') + allTopics().map(t => opt(t, t)).join('');
+  $('#f-source').innerHTML = opt('', 'Any source') + [...new Set(D.tables.flatMap(t => t.sources || []))].sort().map(s => opt(s, s)).join('');
+  $('#f-game').innerHTML = opt('', 'Any game') +
+    (games.some(g => g.known) ? '<optgroup label="Our games">' + games.filter(g => g.known).map(g => opt(g.name, g.name)).join('') + '</optgroup>' : '') +
+    (games.some(g => !g.known) ? '<optgroup label="Other app ids">' + games.filter(g => !g.known).map(g => opt(g.name, g.name)).join('') + '</optgroup>' : '');
+  $('#f-q').oninput = e => { F.q = e.target.value; renderFind(); };
+  $('#f-topic').onchange = e => { F.topic = e.target.value; renderFind(); };
+  $('#f-game').onchange = e => { F.game = e.target.value; renderFind(); };
+  $('#f-source').onchange = e => { F.source = e.target.value; renderFind(); };
+  $('#f-all').onchange = e => { F.all = e.target.checked; renderFind(); };
+  $('#f-reset').onclick = () => { Object.assign(F, {q: '', game: '', topic: '', source: '', all: false}); $('#f-q').value = ''; $('#f-all').checked = false; renderFind(); };
+  $$('#s-find .seg button').forEach(b => b.onclick = () => { F.view = b.dataset.view; renderFind(); });
+}
+function matchTable(t) {
+  if (!F.all && !UA_AUD(t) && !F.q && !F.game) return false;
+  if (F.topic && !(t.topics || []).includes(F.topic)) return false;
+  if (F.source && !(t.sources || []).includes(F.source)) return false;
+  if (F.game && !(t.games || []).some(g => g.name === F.game)) return false;
+  if (F.q) {
+    const hay = JSON.stringify([t.name, t.id, t.fqn, t.summary, t.description, t.topics, t.sources, t.key_fields, (t.games || []).map(g => g.name + ' ' + g.ids.join(' ')), t.domain]).toLowerCase();
+    if (!F.q.toLowerCase().split(/\s+/).filter(Boolean).every(w => hay.includes(w))) return false;
+  }
+  return true;
+}
+function tableCard(t) {
+  const n = (t.games || []).length, src = t.sources || [];
+  return `<button class="tcard" type="button" data-open="${esc(t.id)}">
+    <span class="top"><span class="kicker">${esc(t.topics.slice(0, 3).join(' · ') || t.domain || '')}</span>${t.start_here ? '<span class="pill star">Start here</span>' : ''}</span>
+    <h3>${esc(t.name)}</h3>
+    <span class="sum">${esc(t.summary || t.description)}</span>
+    <span class="meta3">
+      <span><span class="k">Source</span><span class="v">${esc(src[0] || '–')}${src.length > 1 ? ` +${src.length - 1}` : ''}</span></span>
+      <span><span class="k">Data lag</span><span class="v">${esc((t.lag_label || '–').split(' ')[0])}</span></span>
+      <span><span class="k">Updates</span><span class="v">${esc(t.update_time || '–')}</span></span>
+    </span>
+    <span class="foot"><span class="muted">${n ? `${n} game${n > 1 ? 's' : ''}` : ''}${t.latest_date ? `${n ? ' · ' : ''}data up to ${esc(t.latest_date)}` : ''}</span><span class="go">Details →</span></span>
+  </button>`;
+}
+function renderFind() {
+  $$('#s-find .seg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === F.view));
+  $('#f-topic').value = F.topic; $('#f-game').value = F.game; $('#f-source').value = F.source;
+  $('#f-reset').hidden = !(F.q || F.topic || F.game || F.source || F.all);
+  const order = id => D.tables.findIndex(t => t.id === id);
+  const list = D.tables.filter(matchTable).sort((a, b) => (b.start_here - a.start_here) || (UA_AUD(b) - UA_AUD(a)) || order(a.id) - order(b.id));
+  if (F.view === 'games') return renderGames(list);
+  $('#f-count').textContent = `${list.length} table${list.length === 1 ? '' : 's'}`;
+  $('#f-list').innerHTML = list.length ? `<div class="grid g2">${list.map(tableCard).join('')}</div>` :
+    '<div class="card empty"><div class="display">Nothing found</div>Try fewer filters or turn on "Data-team tables". Still missing? <a href="#flows">Request the data</a>.</div>';
+}
+function renderGames(tables) {
+  const ids = new Set(tables.map(t => t.id));
+  let games = (D.games || []).filter(g => g.known || F.game === g.name || F.q);
+  if (F.game) games = games.filter(g => g.name === F.game);
+  if (F.q) games = games.filter(g => (g.name + ' ' + g.tables.join(' ')).toLowerCase().includes(F.q.toLowerCase()));
+  games = games.map(g => ({...g, t: g.tables.filter(id => ids.has(id))})).filter(g => g.t.length);
+  $('#f-count').textContent = `${games.length} game${games.length === 1 ? '' : 's'}`;
+  $('#f-list').innerHTML = games.length ? '<div class="grid g2">' + games.map(g => `<div class="card gcard"><h3><span>${esc(g.name)}</span><span class="muted" style="font-size:14px;font-weight:600">${esc(g.platforms.join(' · '))}</span></h3>
+      <p class="muted" style="margin-top:4px">In ${g.t.length} table${g.t.length > 1 ? 's' : ''}</p>
+      <div class="tlist">${g.t.map(id => { const t = tableById(id); return `<button class="tlink" type="button" data-open="${esc(id)}">${esc(t ? t.name : id)}</button>`; }).join('')}</div></div>`).join('') + '</div>'
+    : `<div class="card empty"><div class="display">No game data yet</div>${(D.games || []).length ? 'No game matches these filters.' : 'Game coverage appears after the daily profile job runs.'}</div>`;
+}
+
+/* ---------- table detail drawer ---------- */
+function tableDetail(t) {
+  const kf = t.key_fields || [], games = t.games || [], ex = t.example_queries || [], pb = t.produced_by || {}, pic = t.pic || {};
+  const fact = (k, v, s) => `<div class="fact"><div class="k">${k}</div><div class="v">${v}${s ? `<small>${s}</small>` : ''}</div></div>`;
+  return `
+    <span class="kicker">${esc(t.topics.join(' · '))}</span>
+    <h2 id="dr-title">${esc(t.name)}</h2>
+    <div class="fqn"><span>${esc(t.fqn)}</span><button class="copy-mini" type="button" data-copytext="${esc(t.fqn)}">Copy name</button></div>
+    <p style="font-size:18px;margin-top:22px">${esc(t.summary || t.description)}</p>
+
+    <div class="dsec"><div class="facts">
+      ${fact('Data source', esc(t.sources.join(', ') || '–'))}
+      ${fact('Games', games.length ? `${games.length} game${games.length > 1 ? 's' : ''}` : (t.profiled_on ? 'None in last 30 days' : 'Not tracked'), games.length ? esc(games.slice(0, 4).map(g => g.name).join(', ')) + (games.length > 4 ? '…' : '') : '')}
+      ${fact('Data lag', esc(t.lag_label || '–'), t.latest_date ? 'Data up to ' + esc(t.latest_date) : 'Latest complete day')}
+      ${fact('Updates (ICT)', esc(t.update_time || '–'))}
+      ${fact('Person in charge', esc(pic.name || '–'), pic.email ? `<a href="mailto:${esc(pic.email)}">${esc(pic.email)}</a>` : '')}
+      ${fact('One row is', esc(t.grain || '–'))}
+    </div></div>
+
+    ${kf.length ? `<div class="dsec"><span class="kicker">Columns to watch when you query</span><div class="collist">${kf.map(f => `<div class="colrow"><b>${esc(f.name)}${f.type ? `<small>${esc(f.type)}</small>` : ''}</b><span>${esc(f.note || '')}</span></div>`).join('')}</div></div>` : ''}
+
+    ${(t.caveats || []).length ? `<div class="dsec"><div class="watch"><span class="kicker" style="color:var(--warn)">Watch out</span><ul class="tight" style="margin-top:10px">${t.caveats.map(c => `<li>${esc(c)}</li>`).join('')}</ul></div></div>` : ''}
+
+    ${ex.length ? `<div class="dsec"><span class="kicker">Example queries</span>${ex.map(q => `<div style="margin-bottom:28px"><div style="font-weight:700;font-size:17px">${esc(q.title)}</div>${q.use_case ? `<div class="muted">${esc(q.use_case)}</div>` : ''}${code(q.sql)}</div>`).join('')}</div>` : ''}
+
+    ${games.length ? `<div class="dsec"><span class="kicker">Games with data in the last 30 days</span><div class="games">${games.map(g => `<span class="gchip" title="${esc(g.ids.join(', '))} · last ${esc(g.last_date)}">${esc(g.name)}${g.platforms.length ? ` <i>${esc(g.platforms.map(p => p === 'Android' ? 'A' : p).join(' · '))}</i>` : ''}</span>`).join('')}</div></div>` : ''}
+
+    <div class="dsec"><details class="acc"><summary><span class="t">Technical details</span></summary><div class="body"><div class="kv">
+      <b>Partition</b><span>${esc(t.partition || '–')}</span><b>Size</b><span>${esc(t.size_hint || '–')}</span>
+      <b>Schedule</b><span>${esc(t.update_schedule || '–')}</span><b>Built by</b><span class="mono">${esc(pb.name || '–')}</span>
+      <b>Pipeline</b><span>${esc(pb.pipeline || '–')}</span><b>Monitored</b><span>${t.monitored ? 'Yes · ' + esc((t.checks || []).join(', ')) : 'No'}</span>
+      ${(t.upstream || []).length ? `<b>Reads from</b><span class="mono">${t.upstream.map(esc).join('<br>')}</span>` : ''}
+    </div></div></details></div>`;
+}
+let lastFocus = null;
+function openTable(id) {
+  const t = tableById(id); if (!t) return;
+  if (!document.body.classList.contains('drawer-open')) lastFocus = document.activeElement;
+  $('#dr-body').innerHTML = tableDetail(t);
+  $('#drawer').scrollTop = 0;
+  document.body.classList.add('drawer-open');
+  setTimeout(() => $('#dr-close').focus({preventScroll: true}), 60);
+}
+function closeDrawer(silent) {
+  if (!document.body.classList.contains('drawer-open')) return;
+  document.body.classList.remove('drawer-open');
+  if (!silent && /[?&](table|item)=/.test(location.hash)) history.replaceState(null, '', viewHash());
+  if (lastFocus && lastFocus.focus) lastFocus.focus({preventScroll: true});
+}
+/* items in "What we have" that have no curated table yet */
+const ITEMS = {};
+function openItem(key) {
+  const it = ITEMS[key]; if (!it) return;
+  if (!document.body.classList.contains('drawer-open')) lastFocus = document.activeElement;
+  $('#dr-body').innerHTML = `<span class="kicker">${esc(it.source)}</span><h2 id="dr-title">${esc(it.label)}</h2>
+    <div class="fqn"><span>${esc(it.fqn)}</span><button class="copy-mini" type="button" data-copytext="${esc(it.fqn)}">Copy name</button></div>
+    <p style="font-size:18px;margin-top:22px">${esc(it.detail || '')}</p>
+    <div class="dsec"><div class="facts"><div class="fact"><div class="k">Source</div><div class="v">${esc(it.source)}</div></div><div class="fact"><div class="k">Freshness</div><div class="v">${esc(it.freshness || '–')}</div></div></div></div>
+    <div class="dsec"><div class="note">${esc(it.note || 'This table is not documented in the hub yet.')}</div></div>
+    <div class="dsec"><p class="muted">Want it fully documented (columns, games, example queries)? Tell uyenthd@vng.com.vn.</p></div>`;
+  $('#drawer').scrollTop = 0;
+  document.body.classList.add('drawer-open');
+  setTimeout(() => $('#dr-close').focus({preventScroll: true}), 60);
+}
+const sep = () => location.hash.includes('?') ? '&' : '?';
+document.addEventListener('click', e => {
+  const o = e.target.closest('[data-open]');
+  if (o) { location.hash = viewHash() + '?table=' + o.dataset.open; return; }
+  const i = e.target.closest('[data-item]');
+  if (i) { location.hash = viewHash() + '?item=' + i.dataset.item; return; }
+  if (e.target.closest('#dr-close,#dr-x,#scrim')) closeDrawer();
+});
+addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+
+/* ---------- QUERIES & FAQ ---------- */
+const Q = {mode: 'queries', q: '', topic: ''};
+function queries() {
+  const tips = [
+    ['Always filter the date column', 'Big tables are partitioned by date. Filtering on it keeps the query fast and cheap.'],
+    ['Know the lag', 'GMT tables are complete up to D-2, AppsFlyer cleaned tables up to D-1. Today is never complete.'],
+    ['Do not add up DAU or A30', 'Summing users across days, countries or media sources counts the same person twice.'],
+    ['AppsFlyer IAP is not store IAP', 'Finance numbers come from the store sales report. Say which one you used.'],
+  ];
+  $('#q-tips').innerHTML = tips.map(([h, p], i) => `<div class="tip"><div class="ic">${i + 1}</div><h3>${esc(h)}</h3><p>${esc(p)}</p></div>`).join('');
+  $$('#s-queries .seg button').forEach(b => b.onclick = () => { Q.mode = b.dataset.q; Q.topic = ''; renderQueries(); });
+  $('#q-q').oninput = e => { Q.q = e.target.value.toLowerCase(); renderQueries(); };
+  $('#q-topic').onchange = e => { Q.topic = e.target.value; renderQueries(); };
+  renderQueries();
+}
+function renderQueries() {
+  $$('#s-queries .seg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.q === Q.mode));
+  if (Q.mode === 'queries') {
+    const qs = D.tables.flatMap(t => (t.example_queries || []).map(q => ({...q, table: t, topics: t.topics || []})));
+    const topics = [...new Set(qs.flatMap(q => q.topics))];
+    $('#q-topic').innerHTML = opt('', 'All topics', Q.topic) + topics.map(t => opt(t, `${t} (${qs.filter(q => q.topics.includes(t)).length})`, Q.topic)).join('');
+    const list = qs.filter(q => (!Q.topic || q.topics.includes(Q.topic)) && (!Q.q || JSON.stringify([q.title, q.use_case, q.sql, q.table.name]).toLowerCase().includes(Q.q)));
+    $('#q-list').innerHTML = list.length ? list.map(q => `<details class="qitem"><summary><h3>${esc(q.title)}</h3><span class="sub">${esc(q.use_case || '')}${q.use_case ? ' · ' : ''}${esc(q.table.name)}</span><span class="act"><span class="o">Show query ▾</span><span class="c">Hide ▴</span></span></summary>
+      <div class="body"><div class="from">From <button class="tlink" type="button" data-open="${esc(q.table.id)}">${esc(q.table.name)}</button><span>Data lag ${esc((q.table.lag_label || '–').split(' ')[0])}</span></div>${code(q.sql)}</div></details>`).join('')
+      : '<div class="card empty"><div class="display">No query found</div>Try another word.</div>';
+  } else {
+    const aud = [...new Set((D.faq || []).map(f => f.audience).filter(Boolean))];
+    $('#q-topic').innerHTML = opt('', 'Everyone', Q.topic) + aud.map(a => opt(a, 'For ' + a, Q.topic)).join('');
+    const list = (D.faq || []).filter(f => (!Q.topic || f.audience === Q.topic || f.audience === 'All') && (!Q.q || JSON.stringify(f).toLowerCase().includes(Q.q)));
+    $('#q-list').innerHTML = list.length ? list.map(f => `<details class="acc"><summary><span class="t">${esc(f.title)}</span><span class="tag">${esc(f.audience)}</span></summary>
+      <div class="body"><div class="two"><div><div class="sublbl">What you see</div><p>${esc(f.symptom)}</p></div><div><div class="sublbl">Why</div><p>${esc(f.cause)}</p></div></div>
+      <div class="sublbl" style="margin-top:26px">What to do</div><p>${esc(f.fix)}</p>${f.check_sql ? '<div class="sublbl" style="margin-top:26px">Check it yourself</div>' + code(f.check_sql) : ''}</div></details>`).join('')
+      : '<div class="card empty"><div class="display">No issue found</div>Try another word.</div>';
+  }
+}
+
+/* ---------- DATA HEALTH ---------- */
+let anSev = 'all', anTable = 'all';
+function incidentCard(i) {
+  const f = i.fix || {};
+  const rows = `<div class="tbl-wrap"><table class="table"><tr><th>Metric</th><th>Value</th><th>Observed</th><th>Expected</th><th>Detail</th></tr>${i.rows.map(r => `<tr><td class="m">${esc(r.metric)}</td><td class="m">${esc(r.dimension_value)}</td><td>${fmt(r.observed)}</td><td>${fmt(r.expected)}</td><td>${esc(r.detail)}</td></tr>`).join('')}</table></div>`;
+  return `<details class="acc" data-sev="${esc(i.severity)}" data-table="${esc(i.table)}">
+    <summary>${pill(i.severity)}${i.status ? `<span class="pill ok">${esc(i.status.status)}</span>` : ''}<span class="t">${esc(i.label)}${i.game && i.game !== '-' ? ' · ' + esc(i.game) : ''}</span><span class="m">${esc((tableById(i.table) || {}).name || i.table)} · ${esc(i.date)}</span></summary>
+    <div class="body"><p style="font-size:17px">${esc(i.headline)}</p><p class="muted" style="margin:6px 0 22px">Pipeline: ${esc(f.pipeline || '–')} · Owner: ${esc(f.owner || '–')}</p>${rows}
+    <div class="two" style="margin-top:28px"><div><div class="sublbl">Likely causes</div><ul class="tight">${(f.causes || []).map(c => `<li>${esc(c)}</li>`).join('')}</ul></div>
+    <div><div class="sublbl">How to fix</div><ol class="tight">${(f.steps || []).map(c => `<li>${esc(c)}</li>`).join('')}</ol></div></div>
+    ${(f.sql || []).map(s => `<div style="font-weight:700;margin-top:26px">${esc(s.label)}</div>${code(s.sql)}`).join('')}</div></details>`;
+}
+function health() {
+  const r = D.run || {};
+  $('#an-lede').innerHTML = `Last check <b>${esc(r.run_at)}</b>: ${r.tables_checked || 0} tables, ${r.errors || 0} check errors. Checks run daily at 10:45 ICT.`;
+  const inc = [...(D.incidents || [])].sort((a, b) => SEV[a.severity] - SEV[b.severity] || a.table.localeCompare(b.table));
+  const c = s => inc.filter(i => i.severity === s).length;
+  $('#an-stats').innerHTML = [['Critical', c('critical'), 'var(--crit)'], ['Warning', c('warning'), 'var(--warn)'], ['Tables affected', new Set(inc.map(i => i.table)).size, 'var(--ink)'], ['Games affected', new Set(inc.map(i => i.app_id).filter(Boolean)).size, 'var(--ink)']]
+    .map(([k, v, col]) => `<div class="card"><span class="kicker">${k}</span><div class="stat-v" style="color:${col};margin-bottom:0">${v}</div></div>`).join('');
+  const h = D.history || [];
+  if (!h.length) $('#an-hist').innerHTML = '<p class="muted" style="margin-top:12px">History fills up after a few daily runs.</p>';
+  else { const max = Math.max(1, ...h.map(d => d.critical + d.warning));
+    $('#an-hist').innerHTML = `<div class="hist">${h.map(d => `<div class="d" title="${esc(d.date)}: ${d.critical} critical, ${d.warning} warning"><div class="c" style="height:${100 * d.critical / max}%"></div><div class="w" style="height:${100 * d.warning / max}%"></div></div>`).join('')}</div>
+      <div class="hist-axis"><span>${esc(h[0].date)}</span><span>${esc(h[h.length - 1].date)}</span></div><div class="legend"><span><i style="background:var(--crit)"></i>critical</span><span><i style="background:var(--amber)"></i>warning</span></div>`; }
+  $('#an-sev').innerHTML = ['all', 'critical', 'warning'].map(s => `<button type="button" data-sev="${s}" aria-pressed="${s === anSev}">${s === 'all' ? 'All' : s[0].toUpperCase() + s.slice(1)} (${s === 'all' ? inc.length : c(s)})</button>`).join('');
+  $('#an-table').innerHTML = opt('all', 'All tables', anTable) + [...new Set(inc.map(i => i.table))].map(t => opt(t, `${(tableById(t) || {}).name || t} (${inc.filter(i => i.table === t).length})`, anTable)).join('');
+  $('#an-list').innerHTML = inc.length ? inc.map(incidentCard).join('') : `<div class="card empty"><div class="display">All clear</div>No open issues for ${esc(D.check_day)}.</div>`;
+  const filt = () => { $$('#an-list > details').forEach(el => { el.hidden = !((anSev === 'all' || el.dataset.sev === anSev) && (anTable === 'all' || el.dataset.table === anTable)); }); $$('#an-sev button').forEach(b => b.setAttribute('aria-pressed', b.dataset.sev === anSev)); };
+  $('#an-sev').onclick = e => { const b = e.target.closest('[data-sev]'); if (b) { anSev = b.dataset.sev; filt(); } };
+  $('#an-table').onchange = e => { anTable = e.target.value; filt(); };
+  const RULES = [
+    ['Duplicated data', 'Rows identical on every column, or repeated business keys, on the checked day', 'Critical'],
+    ['Higher / lower than nearby days', 'Far from the median of the previous 7 days, with enough volume. About 2x is flagged as "loaded twice"', 'Warning'],
+    ['Missing game', 'A game active on 4+ of the last 7 days has no rows on the checked day', 'Critical'],
+    ['Missing metric', 'A game has rows but a metric is 0 while it is usually above 0', 'Critical'],
+    ['Missing date', 'A day with no rows in the last 7 days', 'Critical'],
+    ['Missing media source / country', 'A steady source or country disappeared; critical if it held 15%+ of the game', 'Warning → Critical'],
+    ['Table not refreshed', 'Not modified for more than 30 hours', 'Critical'],
+    ['Pipeline error', 'New rows in the procedures\' error logs in the last 24 hours', 'Critical'],
+  ];
+  $('#rules-table').innerHTML = '<tr><th>What</th><th>Rule</th><th>Severity</th></tr>' + RULES.map(r => `<tr><td style="font-weight:600">${r[0]}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`).join('');
+  $('#an-notify').innerHTML = `Every morning a digest with fix steps goes to email, Teams and Discord, and this page is rebuilt. Raw findings are in <span class="mono">${esc((D.notify || {}).dataset)}.anomaly_log</span>.`;
+}
+
+/* ---------- FLOWS ---------- */
+function flows() {
+  const edges = (D.flows || {}).edges || [];
+  const nodes = [...new Set(edges.flatMap(e => [e[0], e[1]]))];
+  const level = {}; nodes.forEach(n => level[n] = 0);
+  for (let i = 0; i < nodes.length; i++) edges.forEach(([a, b]) => { if (level[b] < level[a] + 1) level[b] = level[a] + 1; });
+  const cols = []; nodes.forEach(n => (cols[level[n]] = cols[level[n]] || []).push(n));
+  const names = ['Sources', 'Raw', 'Cleaned', 'Reporting', 'Final', 'Dashboards'];
+  const into = n => [...new Set(edges.filter(e => e[1] === n).map(e => e[2]).filter(Boolean))];
+  $('#flow-map').innerHTML = cols.map((c, i) => `<div class="flowcol"><span class="kicker">${i === cols.length - 1 ? 'Dashboards' : (names[i] || 'Step ' + (i + 1))}</span>${c.map(n => `<div class="fnode">${esc(n)}${into(n).length ? `<small>${esc(into(n).slice(0, 2).join(' · '))}</small>` : ''}</div>`).join('')}</div>`).join('');
+  const st = {live: ['ok', 'Live'], available: ['warning', 'Available, not loaded'], not_available: ['critical', 'Not available']};
+  $('#flow-sources').innerHTML = ((D.flows || {}).sources || []).map(s => {
+    const [cls, lab] = st[s.status] || ['neutral', s.status];
+    return `<details class="acc"><summary><span class="t">${esc(s.name)}</span><span class="tag">${esc(s.kind)}</span><span class="pill ${cls}">${esc(lab)}</span></summary>
+      <div class="body"><div class="two"><div><div class="sublbl">Contains</div><ul class="tight">${(s.contains || []).map(c => `<li>${esc(c)}</li>`).join('')}</ul><div class="sublbl" style="margin-top:22px">Grain</div><p>${esc(s.grain)}</p></div>
+      <div class="kv"><b>Lands in</b><span class="mono">${esc(s.landing)}</span><b>Delivery</b><span>${esc(s.delivery)}</span><b>Pipeline</b><span>${esc(s.pipeline)}</span><b>Latency</b><span>${esc(s.latency)}</span><b>Owner</b><span>${esc(s.owner)}</span></div></div>
+      ${s.notes ? `<p class="note" style="margin-top:22px">${esc(s.notes)}</p>` : ''}</div></details>`;
+  }).join('');
+  const rp = (D.flows || {}).request_process || {};
+  $('#req-steps').innerHTML = (rp.steps || []).map(s => `<div class="card"><h3>${esc(s.title)}</h3><p>${esc(s.detail)}</p></div>`).join('');
   $('#req-rules').innerHTML = (rp.feasibility_rules || []).map(r => `<li>${esc(r)}</li>`).join('');
   $('#req-email').textContent = rp.request_email || '';
-  $('#rq-src').innerHTML = [...(D.flows.sources || []).map(s => s.name), 'Other / not sure'].map(s => `<option>${esc(s)}</option>`).join('');
-  $('#req-form').addEventListener('submit', e => {
+  $('#rq-src').innerHTML = [...((D.flows || {}).sources || []).map(s => s.name), 'Other / not sure'].map(s => opt(s, s)).join('');
+  $('#req-form').onsubmit = e => {
     e.preventDefault();
     const v = id => $('#' + id).value.trim();
     $('#rq-text').textContent = `[Data request] ${v('rq-q').slice(0, 60)}\n\nRequester: ${v('rq-who')}\nSource: ${v('rq-src')}\nBusiness question: ${v('rq-q')}\nMetrics / fields: ${v('rq-f')}\nGranularity: ${v('rq-g')}\nHistory needed: ${v('rq-h')}\nNeeded by: ${v('rq-d')}`;
     $('#rq-out').hidden = false;
-  });
+  };
 }
 
-/* ---------- pipelines ---------- */
+/* ---------- PIPELINES ---------- */
 function pipelines() {
-  $('#pipe-list').innerHTML = D.pipelines.map(p => `<details class="card" data-search="${esc(JSON.stringify(p).toLowerCase())}"><summary><span class="sum-title">${esc(p.name)}</span><span class="pill neutral">${esc(p.type)}</span><span class="sum-meta">${esc(p.schedule_ict)} ICT</span></summary>
-    <div class="card-body"><div class="meta"><div><b>Project</b><span class="mono">${esc(p.project)}</span></div><div><b>Owner / runs as</b>${esc(p.owner)}</div></div>
-    <div class="lbl">Steps</div>${code(String(p.steps).split('->').map(s => s.trim()).join('\n  -> '))}
-    <div class="lbl">Writes</div><p class="mono" style="margin:4px 0 0">${esc((p.writes || []).join(', '))}</p></div></details>`).join('');
-  $('#prod-table').innerHTML = '<tr><th>Table</th><th>Producer</th><th>Pipeline</th><th>Schedule</th><th>Upstream</th></tr>' + D.tables.map(t => {
-    const pb = t.produced_by || {};
-    return `<tr><td class="mono">${esc(t.fqn)}</td><td class="mono">${esc(pb.name)}</td><td>${esc(pb.pipeline)}</td><td>${esc(t.update_schedule)}</td><td class="mono">${esc((t.upstream || []).join(', '))}</td></tr>`;
-  }).join('');
-  $('#mon-table').innerHTML = '<tr><th>Monitor</th><th>How</th><th>Table</th></tr>' + D.existing_monitors.map(m => `<tr><td>${esc(m.name)}</td><td>${esc(m.how)}</td><td class="mono">${esc(m.table)}</td></tr>`).join('');
+  $('#pipe-list').innerHTML = (D.pipelines || []).map(p => `<details class="acc"><summary><span class="t">${esc(p.name)}</span><span class="tag">${esc(p.type)}</span><span class="m">${esc(p.schedule_ict)} ICT</span></summary>
+    <div class="body"><div class="kv"><b>Project</b><span class="mono">${esc(p.project)}</span><b>Owner</b><span>${esc(p.owner)}</span><b>Steps</b><span>${esc(p.steps)}</span><b>Writes</b><span class="mono">${esc((p.writes || []).join(', '))}</span></div></div></details>`).join('');
+  $('#prod-table').innerHTML = '<tr><th>Table</th><th>Built by</th><th>Updates</th></tr>' + D.tables.map(t => `<tr><td><b>${esc(t.name)}</b><div class="mono muted">${esc(t.fqn)}</div></td><td class="m">${esc((t.produced_by || {}).name)}</td><td>${esc(t.update_time)}</td></tr>`).join('');
+  $('#mon-table').innerHTML = '<tr><th>Monitor</th><th>How</th><th>Table</th></tr>' + (D.existing_monitors || []).map(m => `<tr><td style="font-weight:600">${esc(m.name)}</td><td>${esc(m.how)}</td><td class="m">${esc(m.table)}</td></tr>`).join('');
+  $('#ds-table').innerHTML = '<tr><th>Dataset</th><th>Layer</th><th>What it holds</th><th>Owner</th></tr>' + (D.datasets || []).map(d => `<tr><td class="m">${esc(d.id || d.name)}</td><td>${esc(d.layer)}</td><td>${esc(d.purpose)}</td><td>${esc(d.owner)}</td></tr>`).join('');
 }
 
-/* ---------- anomaly ---------- */
-let anSev = 'all', anTable = 'all';
-function incidentCard(i) {
-  const rows = `<div class="tbl-wrap"><table><tr><th>Metric</th><th>Value</th><th class="num">Observed</th><th class="num">Expected</th><th>Detail</th></tr>${i.rows.map(r => `<tr><td class="mono">${esc(r.metric)}</td><td class="mono">${esc(r.dimension_value)}</td><td class="num">${fmt(r.observed)}</td><td class="num">${fmt(r.expected)}</td><td>${esc(r.detail)}</td></tr>`).join('')}</table></div>`;
-  const f = i.fix || {};
-  return `<details class="card" data-sev="${i.severity}" data-table="${esc(i.table)}" data-search="${esc(JSON.stringify(i).toLowerCase())}">
-    <summary>${pill(i.severity)}${i.status ? `<span class="pill ok">${esc(i.status.status)}</span>` : ''}<span class="sum-title">${esc(i.label)}</span><span class="sum-meta">${esc(i.table)} · ${esc(i.game)} · ${esc(i.date)}</span></summary>
-    <div class="card-body"><p style="margin-top:12px">${esc(i.headline)}</p>
-    <p class="sum-meta">Pipeline: ${esc(f.pipeline)} · Owner: ${esc(f.owner || '–')}</p>${rows}
-    <div class="two"><div><div class="lbl">Likely causes</div><ul class="tight">${(f.causes || []).map(c => `<li>${esc(c)}</li>`).join('')}</ul></div>
-    <div><div class="lbl">How to fix</div><ol class="tight">${(f.steps || []).map(c => `<li>${esc(c)}</li>`).join('')}</ol></div></div>
-    ${(f.sql || []).map(s => `<div class="qtitle">${esc(s.label)}</div>${code(s.sql)}`).join('')}</div></details>`;
-}
-function anomaly() {
-  const r = D.run;
-  $('#an-lede').innerHTML = `Results of the ${esc(r.source)} at <b>${esc(r.run_at)}</b>: ${r.tables_checked} tables checked, ${esc(r.scanned)} scanned, ${r.errors} check errors. The same checks now run every day at 10:45 ICT and write to <span class="mono">${esc(D.notify.dataset)}</span>. This page refreshes every morning after the checks.`;
-  const inc = [...D.incidents].sort((a, b) => SEV[a.severity] - SEV[b.severity] || a.table.localeCompare(b.table));
-  const c = s => inc.filter(i => i.severity === s).length;
-  $('#an-stats').innerHTML = [['Critical', c('critical'), 'var(--crit)'], ['Warning', c('warning'), 'var(--warn)'], ['Tables affected', new Set(inc.map(i => i.table)).size, 'var(--fg)'], ['Games affected', new Set(inc.map(i => i.app_id).filter(Boolean)).size, 'var(--fg)']]
-    .map(([k, v, col]) => `<div class="panel stat"><div class="k">${k}</div><div class="v" style="color:${col}">${v}</div></div>`).join('');
-  $('#an-sev').innerHTML = ['all', 'critical', 'warning'].map(s => `<button class="chip" type="button" data-sev="${s}" aria-pressed="${s === anSev}">${s === 'all' ? 'All severities' : s}</button>`).join('');
-  const tables = ['all', ...new Set(inc.map(i => i.table))];
-  $('#an-tables').innerHTML = tables.map(t => `<button class="chip" type="button" data-tbl="${esc(t)}" aria-pressed="${t === anTable}">${t === 'all' ? 'All tables' : esc(t)} ${t === 'all' ? '' : '<span class="mono">' + inc.filter(i => i.table === t).length + '</span>'}</button>`).join('');
-  $('#an-list').innerHTML = inc.map(incidentCard).join('');
-  const RULES = [
-    ['Duplicated data', 'duplicate', 'Rows identical on every column, or repeated business keys, on the checked day', 'critical'],
-    ['Higher / lower than neighbouring days', 'spike / drop', '|value ÷ median(previous 7 days) − 1| > threshold AND robust z (MAD) > 3.5 AND enough volume. ≈2× is flagged as "loaded twice"', 'warning'],
-    ['Missing game', 'missing_game', 'Game active on ≥4 of the last 7 days (avg ≥ 10) but no rows on the checked day', 'critical'],
-    ['Missing metric', 'missing_metric', 'Game has rows but a metric is 0 while its 7-day median is above the volume floor', 'critical'],
-    ['Missing date', 'missing_date', 'A day with no rows in the last 7 days. Raw AppsFlyer tables are checked from partition metadata only', 'critical'],
-    ['Missing media_source', 'missing_media_source', 'A source with steady volume disappeared today; critical if it held ≥ 15% of the game\'s volume', 'warning → critical'],
-    ['Missing geo', 'missing_geo', 'Same rule on the country column', 'warning → critical'],
-    ['Table not refreshed', 'stale_table', 'Last modified more than 30 h ago (per table)', 'critical'],
-    ['Proc error', 'pipeline_error', 'New rows in the procs\' error_stack_trace tables in the last 24 h (informational "SKIPPED" rows ignored)', 'critical'],
-  ];
-  $('#rules-table').innerHTML = '<tr><th>Criterion</th><th>Check</th><th>Rule</th><th>Severity</th></tr>' + RULES.map(r => `<tr><td>${r[0]}</td><td class="mono">${r[1]}</td><td>${esc(r[2])}</td><td>${esc(r[3])}</td></tr>`).join('');
-  $('#an-notify').innerHTML = `Every day the BigQuery scheduled query <b>UyenTHD - DataHub anomaly checks</b> (10:45 ICT, about 0.9 GB) writes findings to <span class="mono">${esc(D.notify.dataset)}.anomaly_log</span> and emails the owner if it fails. About 30 minutes later the daily job (<span class="mono">python -m mps_datahub.cli export-site --publish --notify</span>, GitHub Actions) rebuilds this page and sends a digest with the fix steps to <b>email, Teams and Discord</b>. ${esc(D.notify.schedule)}.`;
-  $('#latest-sql').textContent = `SELECT severity, table_id, check_type, app_id, dimension_value, metric, check_date, detail\nFROM \`${D.notify.dataset}.anomaly_log\`\nWHERE DATE(run_ts, 'Asia/Ho_Chi_Minh') = CURRENT_DATE('Asia/Ho_Chi_Minh')\nORDER BY CASE severity WHEN 'critical' THEN 0 ELSE 1 END, table_id, check_type;`;
-  filterAnomaly();
-}
-function filterAnomaly() {
-  document.querySelectorAll('#an-list details').forEach(el => {
-    el.hidden = !((anSev === 'all' || el.dataset.sev === anSev) && (anTable === 'all' || el.dataset.table === anTable) && (!query || el.dataset.search.includes(query)));
-  });
-  document.querySelectorAll('#an-sev .chip').forEach(c => c.setAttribute('aria-pressed', c.dataset.sev === anSev));
-  document.querySelectorAll('#an-tables .chip').forEach(c => c.setAttribute('aria-pressed', c.dataset.tbl === anTable));
-}
-$('#an-sev').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) { anSev = b.dataset.sev; filterAnomaly(); } });
-$('#an-tables').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) { anTable = b.dataset.tbl; filterAnomaly(); } });
-
-/* ---------- issues ---------- */
-let faqAud = 'All';
-function issues() {
-  $('#faq-aud').innerHTML = ['All', 'UA', 'Data'].map(a => `<button class="chip" type="button" data-aud="${a}" aria-pressed="${a === faqAud}">${a === 'All' ? 'Everyone' : a}</button>`).join('');
-  $('#faq-list').innerHTML = D.faq.map(f => `<details class="card" data-aud="${esc(f.audience)}" data-search="${esc(JSON.stringify(f).toLowerCase())}"><summary><span class="sum-title">${esc(f.title)}</span><span class="pill neutral">${esc(f.audience)}</span></summary>
-    <div class="card-body"><div class="lbl">Symptom</div><p style="margin:4px 0">${esc(f.symptom)}</p><div class="lbl">Why</div><p style="margin:4px 0">${esc(f.cause)}</p>
-    ${f.check_sql ? '<div class="lbl">Check</div>' + code(f.check_sql) : ''}<div class="lbl">Fix</div><p style="margin:4px 0">${esc(f.fix)}</p></div></details>`).join('');
-  filterIssues();
-}
-function filterIssues() {
-  document.querySelectorAll('#faq-list details').forEach(el => { el.hidden = !((faqAud === 'All' || el.dataset.aud === faqAud || el.dataset.aud === 'All') && (!query || el.dataset.search.includes(query))); });
-  document.querySelectorAll('#faq-aud .chip').forEach(c => c.setAttribute('aria-pressed', c.dataset.aud === faqAud));
-}
-$('#faq-aud').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) { faqAud = b.dataset.aud; filterIssues(); } });
-
-/* ---------- search + copy ---------- */
-$('#q').addEventListener('input', e => {
-  query = e.target.value.trim().toLowerCase();
-  filterInventory(); filterAnomaly(); filterIssues();
-  ['#flow-sources', '#pipe-list'].forEach(sel => document.querySelectorAll(sel + ' details').forEach(el => { el.hidden = !!query && !el.dataset.search.includes(query); }));
-  const cur = location.hash.slice(1) || 'overview';
-  if (query && cur === 'overview') location.hash = 'inventory';
-});
+/* ---------- copy ---------- */
 document.addEventListener('click', e => {
-  const b = e.target.closest('.copy'); if (!b) return;
-  const el = document.getElementById(b.dataset.copy); const txt = el.textContent;
-  const done = () => { b.textContent = 'Copied'; setTimeout(() => b.textContent = 'Copy', 1400); };
-  try { navigator.clipboard.writeText(txt).then(done, () => { selectText(el); b.textContent = 'Press Ctrl+C'; }); } catch (_) { selectText(el); }
-});
-function selectText(el) { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); }
+  const b = e.target.closest('[data-copy],[data-copytext]');
+  if (!b) return;
+  e.stopPropagation();
+  const txt = b.dataset.copytext ?? document.getElementById(b.dataset.copy).textContent;
+  const old = b.textContent;
+  const done = () => { b.textContent = 'Copied'; setTimeout(() => b.textContent = old, 1400); };
+  try { navigator.clipboard.writeText(txt).then(done, () => { b.textContent = 'Press Ctrl+C'; }); } catch (_) { b.textContent = 'Press Ctrl+C'; }
+}, true);
 
 function footer() {
-  $('#foot').innerHTML = `Refreshed daily: BigQuery checks → <span class="mono">mps_datahub export-site</span> → encrypted <span class="mono">docs/data.json</span> → GitHub Pages. Data generated ${esc(D.generated)}. Catalog from <span class="mono">config/*.yaml</span>. Owner: uyenthd. Fields marked TODO still need confirmation from the table owner.`;
-}
-function historyStrip() {
-  const h = D.history || [];
-  if (!h.length) { $('#an-hist').innerHTML = '<p class="sum-meta">No history yet. It fills up after a few daily runs.</p>'; return; }
-  const max = Math.max(1, ...h.map(d => d.critical + d.warning));
-  $('#an-hist').innerHTML = `<div class="hist">${h.map(d => `<div class="d" title="${esc(d.date)}: ${d.critical} critical, ${d.warning} warning">
-      <div class="c" style="height:${100 * d.critical / max}%"></div><div class="w" style="height:${100 * d.warning / max}%"></div></div>`).join('')}</div>
-    <div class="hist-axis"><span>${esc(h[0].date)}</span><span>${esc(h[h.length - 1].date)}</span></div>
-    <div class="legend"><span><i style="background:var(--crit)"></i>critical</span><span><i style="background:var(--warn)"></i>warning</span></div>`;
+  $('#foot').innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between"><span>Data generated ${esc(D.generated)} · refreshed every morning</span><span>Questions? Ask the table's PIC or uyenthd@vng.com.vn</span></div>`;
 }
 
 /* ---------- encrypted data.json (AES-256-GCM, PBKDF2-SHA256; must match mps_datahub/site.py) ---------- */
@@ -480,17 +917,16 @@ const kv = {
 };
 async function fetchDoc() {
   let r;
-  try { r = await fetch('data.json?t=' + Date.now(), { cache: 'no-store' }); } catch (e) { throw new Error('LOAD'); }
+  try { r = await fetch('data.json?t=' + Date.now(), {cache: 'no-store'}); } catch (e) { throw new Error('LOAD'); }
   if (!r.ok) throw new Error('LOAD');
   return r.json();
 }
 async function deriveKey(pw, doc) {
   const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']);
-  return crypto.subtle.deriveKey({ name: 'PBKDF2', hash: 'SHA-256', salt: b64d(doc.salt), iterations: doc.iter }, base,
-    { name: 'AES-GCM', length: 256 }, true, ['decrypt']);
+  return crypto.subtle.deriveKey({name: 'PBKDF2', hash: 'SHA-256', salt: b64d(doc.salt), iterations: doc.iter}, base, {name: 'AES-GCM', length: 256}, true, ['decrypt']);
 }
 async function openDoc(doc, key) {
-  const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64d(doc.iv) }, key, b64d(doc.ct));
+  const pt = await crypto.subtle.decrypt({name: 'AES-GCM', iv: b64d(doc.iv)}, key, b64d(doc.ct));
   return JSON.parse(new TextDecoder().decode(pt));
 }
 // The salt is fixed per password (settings.yaml site.kdf_salt), so the derived AES key stays valid across daily refreshes.
@@ -501,7 +937,7 @@ async function unlock(pw, remember) {
   if (pw) {
     const key = await deriveKey(pw, doc);
     const data = await openDoc(doc, key);
-    kv.set(KEY_STORE, JSON.stringify({ salt: doc.salt, k: b64e(await crypto.subtle.exportKey('raw', key)) }), remember);
+    kv.set(KEY_STORE, JSON.stringify({salt: doc.salt, k: b64e(await crypto.subtle.exportKey('raw', key))}), remember);
     return data;
   }
   const saved = JSON.parse(kv.get(KEY_STORE) || 'null');
@@ -511,23 +947,22 @@ async function unlock(pw, remember) {
 }
 function start(data) {
   D = data;
+  D.tables = D.tables || [];
+  D.tables.forEach(t => { t.summary = t.summary || (t.description || '').split('. ')[0]; t.topics = t.topics || []; t.sources = t.sources || []; t.games = t.games || []; t.key_fields = t.key_fields || []; });
   document.body.classList.remove('locked');
-  overview(); inventory(); flows(); pipelines(); anomaly(); historyStrip(); issues(); route(); footer();
+  home(); have(); findInit(); queries(); health(); flows(); pipelines(); footer(); route();
 }
 $('#gate-form').addEventListener('submit', async e => {
   e.preventDefault();
   const btn = $('#gate-btn'); btn.disabled = true; btn.textContent = 'Opening…'; $('#gate-err').textContent = '';
   try { start(await unlock($('#gate-pw').value, $('#gate-remember').checked)); }
-  catch (err) { $('#gate-err').textContent = String(err.message) === 'LOAD' ? 'Could not load data.json. Open the page over HTTP (GitHub Pages does this).' : 'Wrong password.'; }
-  finally { btn.disabled = false; btn.textContent = 'Open'; $('#gate-pw').value = ''; }
+  catch (err) { $('#gate-err').textContent = String(err.message) === 'LOAD' ? 'Could not load data.json. Open the page over HTTP (GitHub Pages does this).' : 'That password did not work. Try again?'; }
+  finally { btn.disabled = false; btn.textContent = 'Open the hub'; $('#gate-pw').value = ''; }
 });
 $('#btn-out').addEventListener('click', () => { kv.del(KEY_STORE); location.reload(); });
 function applyTheme(t) {
   if (t) document.documentElement.setAttribute('data-theme', t); else document.documentElement.removeAttribute('data-theme');
-  const dark = t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-  $('#btn-theme').textContent = dark ? 'Light' : 'Dark';
   try { t ? localStorage.setItem('datahub_theme', t) : localStorage.removeItem('datahub_theme'); } catch (_) {}
-  if (D && location.hash === '#flows') renderMermaid();
 }
 $('#btn-theme').addEventListener('click', () => {
   const cur = document.documentElement.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
@@ -535,8 +970,6 @@ $('#btn-theme').addEventListener('click', () => {
 });
 try { applyTheme(localStorage.getItem('datahub_theme')); } catch (_) { applyTheme(null); }
 unlock(null).then(start).catch(() => $('#gate-pw').focus());
-
 </script>
-
 </body>
 </html>
